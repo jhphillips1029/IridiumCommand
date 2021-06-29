@@ -1,9 +1,24 @@
 # Iridium Command Center
 
+## Table of Contents
+* [Google Account Information](#google-account-information)
+* [Installing the Program](#installing-the-program)
+* [Running the Program](#running-the-program)
+* [Google API Credentials](#google-api-credentials)
+* [Adding Testing Users](#adding-testing-users)
+
 ### Google Account Information
 See the BOREALIS Teams page or ask Randy.
 
-### Running the program
+### Installing the Program
+If you have git installed, simply use the command `git clone https://github.com/jhphillips1029/IridiumCommand`.
+
+If you do not have git installed, follow the directions below
+1. Navigate to the top of https://github.com/jhphillips1029/IridiumCommand
+2. Click the green 'Code' button and select 'Download ZIP'.
+3. Extract the file to an appropriate location.
+
+### Running the Program
 The program can be run using the `python ICC.py` command.
 
 1. Select 'Tap To Select Profile' along the bottom of the screen to create a profile.
