@@ -31,8 +31,8 @@ def send_iridium_cmd(cmd,imei):
         raise ValueError('Command must be one of the ones defined')
         
     srvc       = Emailer.gmail_authenticate()
-    #to         = 'data@sbd.iridium.com'
-    to         = 'iridium.msgc@gmail.com'
+    to         = 'data@sbd.iridium.com'
+    #to         = 'iridium.msgc@gmail.com'
     subject    = imei
     msg        = ''
     attachment = 'attachments/{}.sbd'.format(cmd)
