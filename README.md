@@ -8,7 +8,9 @@
 * [Adding Testing Users](#adding-testing-users)
 
 ### Google Account Information
-See the BOREALIS Teams page or ask Randy.
+See the MSGC BOREALIS MS Teams page or ask Randy.
+
+Alternatively, you can use your personal Gmail account without affecting the process at all.
 
 ### Installing the Program
 If you have git installed, simply use the command `git clone https://github.com/jhphillips1029/IridiumCommand`.
