@@ -12,18 +12,19 @@ The program can be run using the `python ICC.py` command.
 
 Notes:</br>
 * If you are not connected to the internet, the program will crash.
+* On the first run of the program, you will need to edit the current profile or create a new one to include an actual IMEI number.
 * When you generate new credentials (for whatever reason), you MUST delete the old token.pickle.
 * The program will not begin if the user associated with the credentials has not been added as a testing user.
 
 ### Google API Credentials
-1. Navigate to [https://console.cloud.google.com/home/].
+1. Navigate to https://console.cloud.google.com/home/.
 2. Using the dropdown in the top bar (near the center), select 'Iridium Emailer'.
 3. Using the menu on the left-hand side of the top bar, hover over 'APIs and Services' and select 'Credentials'.
 4. Scroll to OAuth 2.0 Client IDs to find 'Iridium Command'. Scroll to the right on this option and select the download. Save the .json file as 'credentials.json'.
 5. Run ICC.py and sign in through the OAuth screen. You should be set to go now.
 
 ### Adding Testing Users
-1. Navigate to [https://console.cloud.google.com/home/].
+1. Navigate to https://console.cloud.google.com/home/.
 2. Using the dropdown in the top bar (near the center), select 'Iridium Emailer'.
 3. Using the menu on the left-hand side of the top bar, hover over 'APIs and Services' and select 'OAuth consent screen'.
 4. Select the 'Edit App' option next the Iridium Command name.
