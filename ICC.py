@@ -44,7 +44,7 @@ def send_iridium_cmd(cmd,imei):
     return Emailer.send_message(srvc,to,subject,msg,attachments=[attachment])
     
 # get the Gmail API service
-service = Emailer.gmail_authenticate()
+#service = Emailer.gmail_authenticate()
 
 HEIGHT,WIDTH = 600,1000
 colors = {
