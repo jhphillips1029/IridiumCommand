@@ -12,6 +12,7 @@ except ImportError:
 
 # General imports
 import Emailer
+from Map import Map
 import json
 
 # Known commands
@@ -31,8 +32,8 @@ def send_iridium_cmd(cmd,imei):
         raise ValueError('Command must be one of the ones defined')
         
     srvc       = Emailer.gmail_authenticate()
-    to         = 'data@sbd.iridium.com'
-    #to         = 'iridium.msgc@gmail.com'
+    #to         = 'data@sbd.iridium.com'
+    to         = 'iridium.msgc@gmail.com'
     subject    = imei
     msg        = ''
     attachment = 'attachments/{}.sbd'.format(cmd)
@@ -166,7 +167,7 @@ def _send_command():
         cmd_nam = profile['commands'][list(profile['commands'])[v.get()]]
         msg_con = 'Please confirm the following:\n\nCommand: {} ({})\nIMEI:  {}'.format(cmd_num,cmd_nam,profile['imei'])
         if messagebox.askyesno('Confirm Command',msg_con):
-            print("I would normally try to send an email.")
+            # print("I would normally try to send an email.")
             print("send_iridium_cmd({},{})".format(cmd_nam,profile['imei']))
             print(send_iridium_cmd(cmd_nam,profile['imei']))
         
@@ -364,5 +365,9 @@ prev_cmd_label.place(x=WIDTH-550,y=150)
 
 imei_label = tk.Label(text='IMEI: ',fg=colors['yellow'],bg='black',font=('Arial',12,'bold'))
 imei_label.place(x=WIDTH-550,y=175)
+
+# Map
+map_ = Map(root,(45.662947, -111.044888),1501,zoom=0.005)
+map_.place(x=WIDTH-300,y=100)
 
 root.mainloop()
