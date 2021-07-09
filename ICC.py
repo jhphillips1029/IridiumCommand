@@ -12,7 +12,6 @@ except ImportError:
 
 # General imports
 import Emailer
-from Map import Map
 import json
 
 # Known commands
@@ -365,9 +364,5 @@ prev_cmd_label.place(x=WIDTH-550,y=150)
 
 imei_label = tk.Label(text='IMEI: ',fg=colors['yellow'],bg='black',font=('Arial',12,'bold'))
 imei_label.place(x=WIDTH-550,y=175)
-
-# Map
-map_ = Map(root,(45.662947, -111.044888),1501,zoom=0.005)
-map_.place(x=WIDTH-300,y=100)
 
 root.mainloop()
