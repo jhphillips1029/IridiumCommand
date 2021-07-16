@@ -5,6 +5,7 @@
 * [Installing](#installing)
 * [Running](#running)
 * [Modifying](#modifying)
+* [Generating Google Credentials](#generating-google-credentials)
 
 ### About
 
