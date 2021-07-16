@@ -1,0 +1,10 @@
+# To have the main application ignore a module, place the name of the file here
+
+# Utility modules
+Emailer.py
+Balloon_Coordinates.py
+Map.py
+
+# Widgets to ignore
+Demo.py
+Map_orig.py

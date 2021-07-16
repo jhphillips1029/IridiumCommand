@@ -1,0 +1,16 @@
+2021-07-15 23:18:38:DEBUG$ Started widget socket frame...
+2021-07-15 23:18:38:DEBUG$ Ignoring widgets/Balloon_Coordinates.py
+2021-07-15 23:18:38:DEBUG$ Ignoring widgets/Demo.py
+2021-07-15 23:18:38:DEBUG$ Ignoring widgets/Emailer.py
+2021-07-15 23:18:38:DEBUG$ Ignoring widgets/Map.py
+2021-07-15 23:18:39:DEBUG$ Successfully loaded widgets/Tracker.py.
+2021-07-15 23:18:39:DEBUG$ Successfully loaded widgets/Profiles.py.
+2021-07-15 23:18:40:DEBUG$ Successfully loaded widgets/Overview.py.
+2021-07-15 23:18:41:DEBUG$ Successfully instantiated Tracker
+2021-07-15 23:18:41:DEBUG$ Successfully instantiated Profiles
+2021-07-15 23:18:42:DEBUG$ Successfully instantiated Overview
+2021-07-15 23:18:42:DEBUG$ Starting GUI...
+2021-07-15 23:18:48:INFO$ profile 'Solar Balloon' set
+2021-07-15 23:18:49:DEBUG$ New data received
+2021-07-15 23:18:50:INFO$ Payload @ (  46.5770,-110.0327)|1596.10 m
+2021-07-15 23:18:56:INFO$ Command (000,5560) sent. (UNREAD)
