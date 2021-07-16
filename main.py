@@ -1,3 +1,27 @@
+"""
+-------------------------------------------------------------------------------
+MIT License
+Copyright (c) 2021 Ronnel Walton
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-------------------------------------------------------------------------------
+
+This is the main program file. Enjoy.
+"""
+
 try:
     import tkinter as tk
     import tkinter.ttk as ttk
@@ -15,7 +39,8 @@ import os
 import os.path
 from PIL import Image, ImageTk
 import traceback
-    
+
+# Setup a color theme    
 colors = {
            'grey':'#848484',
          'yellow':'#ffce63',
@@ -26,6 +51,7 @@ colors = {
             'red':'#ce6363',
       'pale blue':'#99ccff'
 }
+# Variables for use
 HEIGHT,WIDTH = 800,1200
 height,width = HEIGHT,WIDTH
 buttons = []
@@ -36,6 +62,7 @@ time_str = 'Before'
 frames = []
 
 
+# For creating the rounded rectangle that are so iconic to this theme
 def _create_rounded_rectangle(self,x1,y1,x2,y2,radius,**kwargs):
     points = [x1+radius, y1,
               x1+radius, y1,
@@ -103,10 +130,12 @@ def draw_layout(w,h):
         canvas.create_rectangle(0,(330+45*i)/HEIGHT*height,105/WIDTH*width,(370+45*i)/HEIGHT*height,fill='black',outline='')
     canvas.create_rectangle(0,(330+45*num_frames)/HEIGHT*h,100/WIDTH*w,h,fill=colors['grey'],outline='')
     
+    # Labels
     for label in labels.keys():
         label.configure(font=('Arial',int(labels[label][2]/HEIGHT*h),'bold'))
         label.place(x=labels[label][0]/WIDTH*w,y=labels[label][1]/HEIGHT*h)
     
+    # Buttons
     for btn in buttons:
         btn.configure(font=('Arial',int(10/HEIGHT*h),'bold'))
         btn.place(x=btn_coords[btn][0]/WIDTH*w,
@@ -114,7 +143,8 @@ def draw_layout(w,h):
                   height=int(btn_coords[btn][2]/HEIGHT*height),
                   width=int(btn_coords[btn][3]/WIDTH*width)
                  )
-        
+
+    # Log window        
     log_window.configure(font=('Courier New',int(log_window_nums[-1]/HEIGHT*h)))
     log_window.place(x=log_window_nums[0]/WIDTH*w,
                      y=log_window_nums[1]/HEIGHT*h,
@@ -139,6 +169,7 @@ def close_shortcut(event):
     root.destroy()
 
 
+# Wrapper for other methods of closing the window
 def _close_shortcut():
     close_shortcut(None)
     
@@ -168,6 +199,7 @@ def resize(event):
             logo_label.place(x=(WIDTH-logo_w-30)/WIDTH*width,y=50/HEIGHT*height)
             
             
+# The frame used as a socket for all the widgets
 class WidgetSocket(tk.Frame):
     def __init__(self,master,x,y,w,h):
         super().__init__(master,width=w,height=h)
@@ -252,7 +284,7 @@ if __name__=='__main__':
     socket_frame = WidgetSocket(root,*socket_frame_coords)
     socket_frame.log('Started widget socket frame...',lvl='DEBUG')
 
-    # Importing and setting up widgets
+    # Importing and setting up widgets using an implicit import method
     modules = glob.glob('widgets/*.py')
     try:
         with open('widgets/.ignore','r') as f:
@@ -304,6 +336,7 @@ if __name__=='__main__':
         if break_me:
             break
     
+    # Reorganize the widgets so the three primary widgets are at the top and in order
     ui = list(range(len(frames)))
     ci = []
     primary_widgets = ['Overview','Tracker','Profiles']
