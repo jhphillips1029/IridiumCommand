@@ -21,6 +21,8 @@ To begin, you will need to install [Anaconda](https://docs.anaconda.com/anaconda
 
 Download this repo using the 'CODE' button above, [this link](https://codeload.github.com/jhphillips1029/IridiumCommand/zip/refs/heads/master), or by creating a new directory and running the command `git clone https://github.com/jhphillips1029/IridiumCommand`. If you downloaded a .zip file, unzip it to an appropriate location.
 
+<b>* Note:</b> Windows users will need to use the Anaconda Prompt to execute the command.
+
 Open a terminal window and navigate to the directory containing the code. Run the command `conda install -c conda-forge --file requirements.txt`. This will install the necessary dependencies to run the code.
 
 Finally, you will need to generate credentials for the email portion of the controls. To do so, please follow the directions in <i>[Generating Google Credentials](#generating-google-credentials)</i> (modified from [these](https://developers.google.com/workspace/guides/create-credentials#desktop) instructions).

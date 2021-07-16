@@ -286,6 +286,7 @@ if __name__=='__main__':
 
     # Importing and setting up widgets using an implicit import method
     modules = glob.glob('widgets/*.py')
+    modules = [mod.replace('\\','/') for mod in modules]   # for the shit operating system known as Windows.
     try:
         with open('widgets/.ignore','r') as f:
             ignores = ['widgets/'+line.strip() for line in f.readlines() if line[0]!='#' and line.strip()!='']
