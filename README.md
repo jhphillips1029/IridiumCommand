@@ -19,9 +19,9 @@ Additionally, several more functions have been added, and the program made modul
 
 To begin, you will need to install [Anaconda](https://docs.anaconda.com/anaconda/install/index.html). This is because the conda package manager pulls in some required C files that pip does not.
 
-Download this repo using the 'CODE' button above, [this link](https://codeload.github.com/jhphillips1029/IridiumCommand/zip/refs/heads/master), or by creating a new directory and running the command `git clone https://github.com/jhphillips1029/IridiumCommand`. If you downloaded a .zip file, unzip it to an appropriate location.
+<b>* Note:</b> Windows users will need to use the Anaconda Prompt as the terminal window.
 
-<b>* Note:</b> Windows users will need to use the Anaconda Prompt to execute the command.
+Download this repo using the 'CODE' button above, [this link](https://codeload.github.com/jhphillips1029/IridiumCommand/zip/refs/heads/master), or by creating a new directory and running the command `git clone https://github.com/jhphillips1029/IridiumCommand`. If you downloaded a .zip file, unzip it to an appropriate location.
 
 Open a terminal window and navigate to the directory containing the code. Run the command `conda install -c conda-forge --file requirements.txt`. This will install the necessary dependencies to run the code.
 
