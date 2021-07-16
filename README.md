@@ -56,26 +56,25 @@ ICC is designed to be modular. As a result, you can create your own widgets to a
     * Enter your email address in the <b>User support email</b> field.
     * Enter your email address in the <b>Developer contact information</b> field. (You can't get my email that easily!)
 9. Click <b>Save and Continue</b>. The "Scopes" page appears.
-10. Click <b>Add or Remove Scopes</b>. The "Update selected scopes" page appears.
-13. Click <b>Save and Continue</b>. The "Test users" page appears.
-14. Click <b>Add Users</b>. The "Add users" page appears.
-15. Type in your email address and click <b>Add</b>.
-16. Click <b>Save and Continue</b>. The "Summary" page appears.
-17. Click <b>Back To Dashboard</b>.
-18. At the top-left corner, click Menu.
-19. Click <b>APIs & Services > Dashboard</b>. The dashboard page for your project appears.
-20. Click <b>Enable APIs and Services</b>. The "API Library" page appears.
-21. Search for "Gmail API" and select it. The "Gmail API" page appears.
-22. Click <b>Enable</b>. You will be returned to the dashboard page.
-23. At the top-left corner, click Menu.
-24. Click <b>APIs & Services > Credentials</b>. The credentials page for your project appears.
-25. Click <b>Create Credentials > Help me choose</b>. The "Create credentials" page appears.
-26. Select "Gmail API" from the drop-down and click <b>User data</b>. Then click <b>Next</b>.
-27. Click <b>Add or Remove Scopes</b>. The "Update selected scopes" page appears.
-28. Seach for "ht<span>tps://</span>ma<span>il.go</span>ogle.c<span>om/</span>" and tick the box to the left of it.
-29. Click <b>Update</b>. This returns you to the previous screen.
-30. Click <b>Save and Continue</b>.
-31. Select "Desktop app" from the drop down. You may name the machine as you please.
-32. Click <b>Create</b>.
-33. Click <b>Download</b>. Save to the same directory as ma<span>in.p</span>y. Save the file as "credentials.json". Do <strong>NOT</strong> forget to save as "credentials.json".
-34. Click <b>Done</b>.
+10. Click <b>Save and Continue</b>. The "Test users" page appears.
+11. Click <b>Add Users</b>. The "Add users" page appears.
+12. Type in your email address and click <b>Add</b>.
+13. Click <b>Save and Continue</b>. The "Summary" page appears.
+14. Click <b>Back To Dashboard</b>.
+15. At the top-left corner, click Menu.
+16. Click <b>APIs & Services > Dashboard</b>. The dashboard page for your project appears.
+17. Click <b>Enable APIs and Services</b>. The "API Library" page appears.
+18. Search for "Gmail API" and select it. The "Gmail API" page appears.
+19. Click <b>Enable</b>. You will be returned to the dashboard page.
+20. At the top-left corner, click Menu.
+21. Click <b>APIs & Services > Credentials</b>. The credentials page for your project appears.
+22. Click <b>Create Credentials > Help me choose</b>. The "Create credentials" page appears.
+23. Select "Gmail API" from the drop-down and click <b>User data</b>. Then click <b>Next</b>.
+24. Click <b>Add or Remove Scopes</b>. The "Update selected scopes" page appears.
+25. Seach for "ht<span>tps://</span>ma<span>il.go</span>ogle.c<span>om/</span>" and tick the box to the left of it.
+26. Click <b>Update</b>. This returns you to the previous screen.
+27. Click <b>Save and Continue</b>.
+28. Select "Desktop app" from the drop down. You may name the machine as you please.
+29. Click <b>Create</b>.
+30. Click <b>Download</b>. Save to the same directory as ma<span>in.p</span>y. Save the file as "credentials.json". Do <strong>NOT</strong> forget to save as "credentials.json".
+31. Click <b>Done</b>.
