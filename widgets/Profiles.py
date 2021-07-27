@@ -45,6 +45,7 @@ class Profiles(Widget.Widget):
         for i in range(8):
             label = tk.Label(self,
                              text=bin(i)[2:].zfill(3),
+                             font=('Arial',10),
                              fg=self.master.colors['pale yellow'],
                              bg='black')
             self.labels.append(label)
@@ -52,6 +53,7 @@ class Profiles(Widget.Widget):
         for i in range(8):
             label = tk.Label(self,
                              text='Not set',
+                             font=('Arial',10),
                              anchor='w',
                              fg=self.master.colors['pale yellow'],
                              bg='black')
@@ -60,6 +62,7 @@ class Profiles(Widget.Widget):
             
         label = tk.Label(self,
                          text='Name: Not yet selected',
+                         font=('Arial',10),
                          anchor='w',
                          fg=self.master.colors['pale yellow'],
                          bg='black'
@@ -69,6 +72,7 @@ class Profiles(Widget.Widget):
         
         label = tk.Label(self,
                          text='IMEI: Not set',
+                         font=('Arial',10),
                          anchor='w',
                          fg=self.master.colors['pale yellow'],
                          bg='black'
@@ -80,6 +84,7 @@ class Profiles(Widget.Widget):
         for i in range(8):
             label = tk.Label(self,
                              text=bin(i)[2:].zfill(3),
+                             font=('Arial',10),
                              fg=self.master.colors['pale yellow'],
                              bg='black')
             self.labels.append(label)
@@ -88,6 +93,7 @@ class Profiles(Widget.Widget):
             placeholder = tk.StringVar(self,value=bin(i)[2:].zfill(3))
             entry = tk.Entry(self,
                              textvariable=placeholder,
+                             font=('Arial',10),
                              fg=self.master.colors['pale yellow'],
                              bg='black')
             self.entries.append(entry)
@@ -95,6 +101,7 @@ class Profiles(Widget.Widget):
             
         label = tk.Label(self,
                          text='Name:',
+                         font=('Arial',10),
                          anchor='w',
                          fg=self.master.colors['pale yellow'],
                          bg='black'
@@ -104,6 +111,7 @@ class Profiles(Widget.Widget):
         
         label = tk.Label(self,
                          text='IMEI:',
+                         font=('Arial',10),
                          anchor='w',
                          fg=self.master.colors['pale yellow'],
                          bg='black'
@@ -114,6 +122,7 @@ class Profiles(Widget.Widget):
         placeholder = tk.StringVar(self,value='Name')
         entry = tk.Entry(self,
                          textvariable=placeholder,
+                         font=('Arial',10),
                          fg=self.master.colors['pale yellow'],
                          bg='black'
                         )
@@ -123,6 +132,7 @@ class Profiles(Widget.Widget):
         placeholder = tk.StringVar(self,value='IMEI')
         entry = tk.Entry(self,
                          textvariable=placeholder,
+                         font=('Arial',10),
                          fg=self.master.colors['pale yellow'],
                          bg='black'
                         )
@@ -131,6 +141,7 @@ class Profiles(Widget.Widget):
         
         self.load_profile = tk.Button(self,
                                       text='Load Profile',
+                                      font=('Arial',10),
                                       command=self.load_profile,
                                       anchor='se',
                                       highlightthickness=0,
@@ -142,6 +153,7 @@ class Profiles(Widget.Widget):
         
         self.save_new = tk.Button(self,
                                   text='Save New',
+                                  font=('Arial',10),
                                   command=lambda:self.save_profile(False),
                                   anchor='se',
                                   highlightthickness=0,
@@ -153,6 +165,7 @@ class Profiles(Widget.Widget):
         
         self.overwrite = tk.Button(self,
                                   text='Overwrite',
+                                  font=('Arial',10),
                                   command=lambda:self.save_profile(True),
                                   anchor='se',
                                   highlightthickness=0,
@@ -167,12 +180,6 @@ class Profiles(Widget.Widget):
         
     def redraw(self,w,h):
         self.canvas.delete('all')
-        
-        # Actually deal with resizing
-        for label in self.labels:
-            label.configure(font=('Arial',int(10/self.m_H*h)))
-            
-        self.load_profile.configure(font=('Arial',int(10/self.m_H*h)))
         
         # All the pretty little ponies
         self.canvas.create_rounded_rectangle(0,0,(self.w/2-2.5)/self.m_W*w,self.h/self.m_H*h,100/self.m_H*h,fill=self.master.colors['grey'],outline='')

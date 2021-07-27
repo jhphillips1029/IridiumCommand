@@ -99,14 +99,17 @@ class Map(Widget.Widget):
         buff = io.BytesIO()
         self.fig.savefig(buff,format='png')
         plt.close(self.fig)
+        
         self.image = Image.open(buff)
         self.image = self.autocrop_image(self.image)
         self.image = self.image.resize((self.img_W,self.img_H))
         self.img_w,self.img_h = self.image.width,self.image.height
+        
         self.copy_of_image = self.image.copy()
         self.photo = ImageTk.PhotoImage(self.image)
         self.label.configure(image=self.photo)
         self.label.image = self.photo
+        
         buff.close()
         
         

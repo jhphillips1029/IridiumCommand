@@ -51,6 +51,7 @@ colors = {
             'red':'#ce6363',
       'pale blue':'#99ccff'
 }
+MASTER_COLORS = colors.copy()
 # Variables for use
 HEIGHT,WIDTH = 800,1200
 height,width = HEIGHT,WIDTH
@@ -60,9 +61,10 @@ labels = {}
 active_frame = 0
 time_str = 'Before'
 frames = []
+alert_ring_show = False
 
 
-# For creating the rounded rectangle that are so iconic to this theme
+# For creating the rounded rectangles that are so iconic to this theme
 def _create_rounded_rectangle(self,x1,y1,x2,y2,radius,**kwargs):
     points = [x1+radius, y1,
               x1+radius, y1,
@@ -100,9 +102,17 @@ def set_frame(num):
     
 
 def draw_layout(w,h):
-    global buttons
+    global buttons,colors,MASTER_COLORS
     canvas.delete("all")
     canvas.config(width=w,height=h)
+    
+    if socket_frame.alerting:
+        for key in colors.keys():
+            colors[key] = socket_frame.alert_color
+        socket_frame.colors = colors
+    else:
+        colors = MASTER_COLORS.copy()
+        socket_frame.colors = colors
     
     # Upper Divider
     canvas.create_rounded_rectangle(          0,  0,w,250/HEIGHT*h,100,fill=colors['pink'],outline='')
@@ -131,13 +141,18 @@ def draw_layout(w,h):
     canvas.create_rectangle(0,(330+45*num_frames)/HEIGHT*h,100/WIDTH*w,h,fill=colors['grey'],outline='')
     
     # Labels
-    for label in labels.keys():
-        label.configure(font=('Arial',int(labels[label][2]/HEIGHT*h),'bold'))
+    for i,label in enumerate(labels.keys()):
+        label_color = colors[label_colors[i]]
+        label.configure(font=('Arial',int(labels[label][2]/HEIGHT*h),'bold'),
+                        fg=label_color)
         label.place(x=labels[label][0]/WIDTH*w,y=labels[label][1]/HEIGHT*h)
     
     # Buttons
-    for btn in buttons:
-        btn.configure(font=('Arial',int(10/HEIGHT*h),'bold'))
+    for i,btn in enumerate(buttons):
+        btn_color = colors[btn_colors[i%len(btn_colors)]]
+        btn.configure(font=('Arial',int(10/HEIGHT*h),'bold'),
+                      bg=btn_color,
+                      activebackground=btn_color)
         btn.place(x=btn_coords[btn][0]/WIDTH*w,
                   y=btn_coords[btn][1]/HEIGHT*h,
                   height=int(btn_coords[btn][2]/HEIGHT*height),
@@ -167,6 +182,28 @@ def close_shortcut(event):
     socket_frame.log_file.close()
         
     root.destroy()
+    
+    
+def alert_ring():
+    global alert_ring_show
+    draw_layout(width,height)
+    if alert_ring_show and socket_frame.alerting:
+        canvas.create_rounded_rectangle(165/WIDTH*width,
+                                        310/HEIGHT*height,
+                                        (WIDTH-10)/WIDTH*width,
+                                        (HEIGHT-10)/HEIGHT*height,
+                                        100/HEIGHT*height,
+                                        fill=socket_frame.alert_color)
+        canvas.create_rounded_rectangle(175/WIDTH*width,
+                                        320/HEIGHT*height,
+                                        (WIDTH-20)/WIDTH*width,
+                                        (HEIGHT-20)/HEIGHT*height,
+                                        50/HEIGHT*height,
+                                        fill='black')
+                         
+    alert_ring_show = not(alert_ring_show)               
+    if socket_frame.alerting:
+        socket_frame.after(500,alert_ring)
 
 
 # Wrapper for other methods of closing the window
@@ -176,17 +213,18 @@ def _close_shortcut():
     
 def resize(event):
     global width,height
-    if str(event.widget)=='.':
-        if (width != event.width) and (height != event.height):
-            width,height = event.width,event.height
+    if event=='dummy_resize' or str(event.widget)=='.':
+        if event=='dummy_resize' or ((width != event.width) and (height != event.height)):
+            if event!='dummy_resize':
+                width,height = event.width,event.height
             
-            draw_layout(event.width,event.height)
+            draw_layout(width,height)
             
             socket_frame.place(x=socket_frame_coords[0]/WIDTH*width,
                                y=socket_frame_coords[1]/HEIGHT*height,
                                width=socket_frame_coords[2]/WIDTH*width,
                                height=socket_frame_coords[3]/HEIGHT*height)
-            socket_frame.width,socket_frame.height = event.width,event.height
+            socket_frame.width,socket_frame.height = width,height
             
             for frame in frames:
                 frame.resize(width,height)
@@ -207,12 +245,20 @@ class WidgetSocket(tk.Frame):
         
         self.init_log()
         
-        self.colors = colors
+        self.colors = MASTER_COLORS.copy()
         self.time_str = time_str
         self.width,self.height = WIDTH,HEIGHT
         
+        self.alert_colors = ['green',
+                             'blue',
+                             'yellow',
+                             'red',
+                            ]
+        
         self.profile = None
         self.frames = []
+        self.alert_level = 0
+        self.alerting = False
         
         
     def init_log(self):
@@ -253,6 +299,20 @@ class WidgetSocket(tk.Frame):
         self.profile = profile
         for frame in self.frames:
             frame._set_profile(profile)
+            
+            
+    def set_alert(self,level):
+        level+=1
+        self.alert_level = level
+        self.alerting = self.alert_level>0
+        if self.alerting:
+            self.log('{} Alert activated.'.format(self.alert_colors[level-1].capitalize()))
+        else:
+            self.log('Alert cancelled.')
+        alert_ring_show = True
+        self.alert_color = self.alert_colors[self.alert_level-1]
+        resize('dummy_resize')
+        alert_ring()
         
         
 def update_log_window():
@@ -263,7 +323,8 @@ def update_log_window():
             len_longest_line=len(line.strip())
     
     for line in socket_frame.log_lines:
-        log_window.configure(text=log_window.cget('text')+line.strip().ljust(len_longest_line)+'\n')
+        log_window.configure(text=log_window.cget('text')+line.strip().ljust(len_longest_line)+'\n',
+                             fg=colors[label_colors[2]])
     
     log_window.after(1000,update_log_window)
 
@@ -366,15 +427,16 @@ if __name__=='__main__':
         buttons.append(btn)
         btn_coords[btn]=(0,330+45*i,40,100)
     
-    title_label = tk.Label(text='Iridium Command Center',fg=colors['yellow'],bg='black')
+    label_colors = ['yellow','pale blue','pale yellow']
+    title_label = tk.Label(text='Iridium Command Center',fg=colors[label_colors[0]],bg='black')
     labels[title_label] = [500,50,24]
     
-    time_label = tk.Label(text='',fg=colors['pale blue'],bg='black')
+    time_label = tk.Label(text='',fg=colors[label_colors[1]],bg='black')
     labels[time_label] = [550,100,18]
     time()
     
     log_window_nums = [110,10,350,200,8]
-    log_window = tk.Label(root,anchor='sw',bg='black',fg=colors['pale yellow'])
+    log_window = tk.Label(root,anchor='sw',bg='black',fg=colors[label_colors[2]])
     update_log_window()
     
     image = Image.open('logo.png')

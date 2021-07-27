@@ -60,6 +60,7 @@ class Overview(Widget.Widget):
         for i in range(8):
             self.btns.append(tk.Button(self,
                                     text=str(bin(i)[2:].zfill(3)),
+                                    font=('Arial',10,'bold'),
                                     command=partial(self.set_cmd,i),
                                     anchor='se',
                                     highlightthickness=0,
@@ -71,8 +72,12 @@ class Overview(Widget.Widget):
         for i in range(len(self.btns)):
             self.add_comp(self.btns[i],self.w-100,65+40*i,100,35)
     
+        X = 550
+        Y = 115
+        self.X_block,self.Y_block = X,Y
         self.send_cmd_btn = tk.Button(self,
                                       text='Send Command',
+                                      font=('Arial',10,'bold'),
                                       command=self.send_command,
                                       anchor='se',
                                       highlightthickness=0,
@@ -80,42 +85,65 @@ class Overview(Widget.Widget):
                                       relief='flat',
                                       bg=self.master.colors['red'],
                                       activebackground=self.master.colors['red'])
-        self.add_comp(self.send_cmd_btn,505,105,150,50)
+        self.add_comp(self.send_cmd_btn,X,Y+210,150,50)
         
         self.labels = []
         for i in range(8):
             label = tk.Label(self,
                              text=bin(i)[2:].zfill(3),
+                             font=('Arial',10),
                              fg=self.master.colors['pale yellow'],
                              bg='black')
             self.labels.append(label)
-            self.add_comp(label,100,100+25*i,50,20)
+            self.add_comp(label,X,Y+25*i,50,20)
         for i in range(8):
             label = tk.Label(self,
                              text='Not set',
+                             font=('Arial',10),
                              anchor='w',
                              fg=self.master.colors['pale yellow'],
                              bg='black')
             self.labels.append(label)
-            self.add_comp(label,155,100+25*i,150,20)
+            self.add_comp(label,X+55,Y+25*i,150,20)
             
         label = tk.Label(self,
                          text='Profile: Select under \'Profiles\'',
+                         font=('Arial',10),
                          anchor='w',
                          fg=self.master.colors['pale yellow'],
                          bg='black'
                         )
         self.labels.append(label)
-        self.add_comp(label,100,50,250,20)
+        self.add_comp(label,X,Y-50,250,20)
             
         label = tk.Label(self,
                          text='IMEI: Not set',
+                         font=('Arial',10),
                          anchor='w',
                          fg=self.master.colors['pale yellow'],
                          bg='black'
                         )
         self.labels.append(label)
-        self.add_comp(label,100,75,250,20)
+        self.add_comp(label,X,Y-25,250,20)
+        
+        self.alert_button_colors = {key:key for key in self.master.alert_colors}
+        self.alert_button_colors['Cancel']='#3e3e3e'
+        self.X_alert_block = 110
+        self.Y_alert_block = 100
+        for i,alert_color in enumerate(self.master.alert_colors[::-1]+['Cancel']):
+            self.add_comp(tk.Button(self,
+                                    text=alert_color.capitalize()+' Alert',
+                                    font=('Arial',10,'bold'),
+                                    command=partial(self.master.set_alert,
+                                                    len(self.master.alert_colors)-i-1),
+                                    anchor='se',
+                                    highlightthickness=0,
+                                    bd=0,
+                                    relief='flat',
+                                    bg=self.alert_button_colors[alert_color],
+                                    activebackground=self.alert_button_colors[alert_color]
+                                   ),
+                          self.X_alert_block,self.Y_alert_block+i*55,100,30)
                           
         self.update()
         tk.Canvas.create_rounded_rectangle = _create_rounded_rectangle
@@ -167,21 +195,16 @@ class Overview(Widget.Widget):
                                      fill='black',
                                      outline='')
         
-        self.canvas.create_rounded_rectangle(500/self.m_W*w,
-                                             100/self.m_H*h,
-                                             665/self.m_W*w,
-                                             165/self.m_H*h,
+        self.canvas.create_rounded_rectangle((self.X_block-10)/self.m_W*w,
+                                             (self.Y_block+200)/self.m_H*h,
+                                             (self.X_block+160)/self.m_W*w,
+                                             (self.Y_block+270)/self.m_H*h,
                                              30/self.m_H*h,
                                              fill=self.master.colors['red'],
                                              outline='')
         
-        # Actually deal with resizing
-        self.send_cmd_btn.configure(font=('Arial',int(10/self.m_H*h),'bold'))
-        
         for i in range(len(self.btns)):
             ind_color = self.master.colors['red'] if i==self.active_cmd else self.master.colors['grey']
-            
-            self.btns[i].configure(font=('Arial',int(10/self.m_H*h),'bold'))
             
             self.canvas.create_rounded_rectangle((self.w-130)/self.m_W*w,
                                                  (65+40*i)/self.m_H*h,
@@ -197,8 +220,15 @@ class Overview(Widget.Widget):
                                          fill='black',
                                          outline='')
                                          
-        for label in self.labels:
-            label.configure(font=('Arial',int(10/self.m_H*h)))
+        for i,alert_color in enumerate(self.master.alert_colors[::-1]+['Cancel']):
+            self.canvas.create_rounded_rectangle((self.X_alert_block-10)/self.m_W*w,
+                                                 (self.Y_alert_block-10+i*55)/self.m_H*h,
+                                                 (self.X_alert_block+110)/self.m_W*w,
+                                                 (self.Y_alert_block-10+i*55+50)/self.m_H*h,
+                                                 (30)/self.m_H*h,
+                                                 fill=self.alert_button_colors[alert_color],
+                                                 outline=''
+                                                )
         
                           
     def set_cmd(self,cmd_num):

@@ -32,6 +32,7 @@ from widgets.Widget import _create_rounded_rectangle
 import widgets.Balloon_Coordinates as BC
 import pandas as pd
 import requests
+import urllib
 from threading import Thread
 import widgets.Map as Map
 import numpy as np
@@ -43,26 +44,77 @@ class Tracker(Widget.Widget):
         Widget.Widget.__init__(self,master,x,y,m_W,m_H,w,h,bg='black')
         tk.Canvas.create_rounded_rectangle = _create_rounded_rectangle
         
+        self.p_0 = 101325
+        self.T_0 = 288.16
+        self.g = 9.80665
+        self.M = 0.02896968
+        self.R_0 = 8.314462618
+        
         self.canvas = tk.Canvas(self,borderwidth=0,highlightthickness=0,bg='black')
         self.add_comp(self.canvas,0,0,w,h)
         
         self.Map = Map.Map(self,0,0,w,h,0.5*w,1.0*h)
         
         self.bc = None
-        self.data = {'latitude':self.Map.DEFAULT_center_pt[0],
-                     'longitude':self.Map.DEFAULT_center_pt[1]}
+        self.data = {'latitude':[self.Map.DEFAULT_center_pt[0]],
+                     'longitude':[self.Map.DEFAULT_center_pt[1]],
+                     'uid':[0]}
         
-        self.coord_label = tk.Label(self,text='Coordinates:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
-        self.add_comp(self.coord_label,0.5*self.w+130,20,155,20)
+        self.titles = []
+        self.labels = []
         
-        self.latlon_label = tk.Label(self,text='Lat: {:9.4f}\nLon: {:9.4f}'.format(*self.Map.center_pt),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
-        self.add_comp(self.latlon_label,0.5*self.w+135,40,100,30)
+        title = tk.Label(self,text='Coordinates:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
+        self.add_comp(title,0.5*self.w+130,20,155,25)
+        self.titles.append(title)
         
-        self.elev_label = tk.Label(self,text='Altitude:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
-        self.add_comp(self.elev_label,0.5*self.w+130,85,155,20)
+        label = tk.Label(self,text='Lat: {:9.4f}\nLon: {:9.4f}'.format(*self.Map.center_pt),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,40,100,30)
+        self.labels.append(label)
+        self.latlon_label = label
         
-        self.alt_label = tk.Label(self,text='Alt: {} m'.format(self.Map.DEFAULT_elev),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
-        self.add_comp(self.alt_label,0.5*self.w+135,105,100,15)
+        title = tk.Label(self,text='Altitude:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
+        self.add_comp(title,0.5*self.w+130,85,155,25)
+        self.titles.append(title)
+        
+        label = tk.Label(self,text='Alt: {:7.2f} m'.format(self.Map.DEFAULT_elev),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,105,100,15)
+        self.labels.append(label)
+        self.alt_label = label
+        
+        label = tk.Label(self,text='Alt: {:7.1f} ft'.format(self.Map.DEFAULT_elev*3.28084),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,120,100,15)
+        self.labels.append(label)
+        self.altft_label = label
+        
+        params = {'output':'json','x':self.Map.DEFAULT_center_pt[1],'y':self.Map.DEFAULT_center_pt[0],'units':'Meters'}
+        url = r'https://nationalmap.gov/epqs/pqs.php?'
+        result = requests.get((url + urllib.parse.urlencode(params)))
+        agl = float(result.json()['USGS_Elevation_Point_Query_Service']['Elevation_Query']['Elevation']) - self.Map.DEFAULT_elev
+        label = tk.Label(self,text='AGL: {:7.2f} m'.format(agl),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,135,100,15)
+        self.labels.append(label)
+        self.agl_label = label
+        
+        title = tk.Label(self,text='Velocities:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(title,0.5*self.w+130,165,155,25)
+        self.titles.append(title)
+        
+        label = tk.Label(self,text='Vert: {:7.2f} m/s'.format(0),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,190,125,15)
+        self.labels.append(label)
+        self.vertvel_label = label
+        
+        label = tk.Label(self,text='Grnd: {:7.2f} m/s'.format(0),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,205,125,15)
+        self.labels.append(label)
+        self.grndvel_label = label
+        
+        p_theory = self.p_0*np.exp(-((self.g*self.Map.DEFAULT_elev*self.M)/(self.T_0*self.R_0)))
+        pcntg = 100*(1-p_theory/self.p_0)
+        label = tk.Label(self,text='You are above {:6.2f}% of\nthe atmosphere.'.format(pcntg),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+130,235,155,30)
+        self.labels.append(label)
+        self.pcntg_label = label
         
         self.buttons = []
         x_coords = [40,10,40,70,40,40]
@@ -72,6 +124,7 @@ class Tracker(Widget.Widget):
         for x,y,s,c in zip(x_coords,y_coords,symbols,cmds):
             button = tk.Button(self,
                                text=s,
+                               font=('Arial',18),
                                command=c,
                                highlightthickness=0,
                                bd=0,
@@ -123,15 +176,6 @@ class Tracker(Widget.Widget):
                                              90/self.m_H*h,
                                              fill='black',
                                              outline='')
-                                             
-        # Actually deal with resizing
-        self.coord_label.configure(font=('Arial',int(18/self.m_H*h),'bold'))
-        self.latlon_label.configure(font=('Arial',int(10/self.m_H*h)))
-        self.elev_label.configure(font=('Arial',int(18/self.m_H*h),'bold'))
-        self.alt_label.configure(font=('Arial',int(10/self.m_H*h)))
-        
-        for btn in self.buttons:
-            btn.configure(font=('Arial',int(18/self.m_H*h)))
         
         self.Map.resize((self.w)/self.m_W*w,(self.h)/self.m_H*h)
         
@@ -170,7 +214,7 @@ class Tracker(Widget.Widget):
         
     def _update_coords(self,clear):
         if self.bc is None:
-            pass
+            return;
         else:
             try:
                 urlData = requests.get("https://borealis.rci.montana.edu/flight?uid={}&format=csv".format(self.bc.uid)).content
@@ -181,6 +225,8 @@ class Tracker(Widget.Widget):
                 pass   # self.master.log('No new data',lvl='DEBUG')
             else:
                 self.data = data
+                if list(self.data['uid'])[-1]!=self.bc.uid:
+                    return;
                 self.master.log('New data received',lvl='DEBUG')
                 
                 spread = np.array(self.data[['latitude','longitude']].max()) - np.array(self.data[['latitude','longitude']].min())
@@ -191,6 +237,22 @@ class Tracker(Widget.Widget):
                 
                 self.latlon_label.configure(text='Lat: {:9.4f}\nLon: {:9.4f}'.format(list(self.data['latitude'])[-1],list(self.data['longitude'])[-1]))
                 self.alt_label.configure(text='Alt: {:7.2f} m'.format(list(self.data['altitude'])[-1]))
+                
+                self.altft_label.configure(text='Alt: {:7.1f} ft'.format(list(self.data['altitude'])[-1]*3.28084))
+                
+                params = {'output':'json','x':list(self.data['longitude'])[-1],'y':list(self.data['latitude'])[-1],'units':'Meters'}
+                url = r'https://nationalmap.gov/epqs/pqs.php?'
+                result = requests.get((url + urllib.parse.urlencode(params)))
+                agl = float(result.json()['USGS_Elevation_Point_Query_Service']['Elevation_Query']['Elevation']) - list(self.data['altitude'])[-1]
+                self.agl_label.configure(text='AGL: {:7.2f} m'.format(agl))
+                
+                self.vertvel_label.configure(text='Vert: {:7.2f} m/s'.format(list(self.data['vertical_velocity'])[-1]))
+                
+                self.grndvel_label.configure(text='Grnd: {:7.2f} m/s'.format(list(self.data['ground_speed'])[-1]))
+                
+                p_theory = self.p_0*np.exp(-((self.g*list(self.data['altitude'])[-1]*self.M)/(self.T_0*self.R_0)))
+                pcntg = 100*(1-p_theory/self.p_0)
+                self.pcntg_label.configure(text='You are above {:6.2f}% of\nthe atmosphere.'.format(pcntg))
                 
                 self.master.log('Payload @ ({:9.4f},{:9.4f})|{:7.2f} m'.format(list(self.data['latitude'])[-1],list(self.data['longitude'])[-1],list(self.data['altitude'])[-1]))
                 

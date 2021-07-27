@@ -51,6 +51,16 @@ class Widget(tk.Frame):
                         y=cl[2]/self.m_H*h,
                         width=int(cl[3]/self.m_W*w),
                         height=int(cl[4]/self.m_H*h))
+            try:
+                font = cl[-1]['font'].split(' ')
+                if len(font)<=1:
+                    raise ValueError('Ignoring unspecified font')
+                font[1] = int(int(font[1])/self.m_H*h)
+                cl[0].configure(font=tuple(font))
+            except: pass
+            for trait in ['background','foreground','activebackground','activeforeground','insertbackground']:
+                if trait in cl[-1].keys():
+                    cl[0][trait] = self.master.colors[cl[-1][trait]]
         
         if 'redraw' in dir(self):
             # If 'redraw' is an actual function for this widget, call it.
@@ -66,7 +76,19 @@ class Widget(tk.Frame):
         
         
     def add_comp(self,comp,x,y,w,h):
-        self.components.append([comp,x,y,w,h])
+        comp_attr = {}
+        for trait in ['background','foreground','activebackground','activeforeground','insertbackground','font']:
+            try:
+                dummy = comp[trait]
+                if trait not in ['font']:
+                    for key in self.master.colors.keys():
+                        if dummy == self.master.colors[key]:
+                            comp_attr[trait] = key
+                            break
+                else:
+                    comp_attr[trait] = dummy
+            except: pass
+        self.components.append([comp,x,y,w,h,comp_attr])
         self.components[-1][0].place(x=x,y=y,width=w,height=h)
         
 
