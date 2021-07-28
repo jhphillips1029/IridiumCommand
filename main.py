@@ -315,6 +315,31 @@ class WidgetSocket(tk.Frame):
         alert_ring()
         
         
+class Splash(tk.Toplevel):
+    def __init__(self,parent):
+        tk.Toplevel.__init__(self,parent,bg='black')
+        self.title('ICC')
+        self.geometry('{}x{}'.format(200,150))
+    
+        image = Image.open('logo.png')
+        img_copy= image.copy()
+        tk_image = ImageTk.PhotoImage(image)
+        logo_label = tk.Label(self,image=tk_image,bg='black')
+        logo_label.image = tk_image
+        logo_w,logo_h = image.width,image.height
+        logo_label.pack()
+        
+        self.label = tk.Label(self,
+                              text='Loading...',
+                              font=('Arial',18),
+                              fg=colors['pale yellow'],
+                              bg='black'
+                             )
+        self.label.pack()
+        
+        self.update()
+        
+        
 def update_log_window():
     log_window.configure(text='')
     len_longest_line = 0
@@ -331,8 +356,10 @@ def update_log_window():
         
 if __name__=='__main__':
     root = tk.Tk()
+    root.withdraw()
+    splash = Splash(root)
     root.geometry('{}x{}'.format(WIDTH,HEIGHT))
-    root.title('Iridium Command')
+    root.title('Iridium Command Center')
     
     root.bind('<Control-Key-q>',close_shortcut)
     root.protocol("WM_DELETE_WINDOW",_close_shortcut)
@@ -451,6 +478,10 @@ if __name__=='__main__':
     [frames[i].hide() if i!=active_frame else frames[i].show(width,height) for i in range(len(frames))]
     draw_layout(WIDTH,HEIGHT)
     
+    socket_frame.log('Starting GUI...',lvl='DEBUG')
+    splash.destroy()
+    root.deiconify()
+    
     root.update()
     if root.winfo_screenwidth()<WIDTH:
         r = root.winfo_screenwidth()/WIDTH
@@ -460,6 +491,5 @@ if __name__=='__main__':
         r = root.winfo_screenheight()/HEIGHT
         w,h = int(WIDTH*r),int(HEIGHT*r)
         root.geometry('{}x{}'.format(w,h))
-    
-    socket_frame.log('Starting GUI...',lvl='DEBUG')
+        
     root.mainloop()

@@ -39,7 +39,8 @@ import widgets.Widget as Widget
 class Map(Widget.Widget):
     def __init__(self,master,x,y,m_W,m_H,w,h):
         Widget.Widget.__init__(self,master,x,y,m_W,m_H,w,h,bg='blue')
-        self.img_W,self.img_H = int(w),int(h)
+        self.img_oW,self.img_oH = int(w),int(h)
+        self.img_w,self.img_h = int(w),int(h)
         
         self.DEFAULT_center_pt = (45.662947, -111.044888)
         self.DEFAULT_zoom=0.001
@@ -102,8 +103,7 @@ class Map(Widget.Widget):
         
         self.image = Image.open(buff)
         self.image = self.autocrop_image(self.image)
-        self.image = self.image.resize((self.img_W,self.img_H))
-        self.img_w,self.img_h = self.image.width,self.image.height
+        self.image = self.image.resize((self.img_w,self.img_h))
         
         self.copy_of_image = self.image.copy()
         self.photo = ImageTk.PhotoImage(self.image)
@@ -114,8 +114,8 @@ class Map(Widget.Widget):
         
         
     def redraw(self,w,h):
-        self.image = self.copy_of_image.resize((int(self.img_w/self.m_W*w), int(self.img_h/self.m_H*h)))
-        self.img_W,self.img_H = int(self.img_w/self.m_W*w), int(self.img_h/self.m_H*h)
+        self.img_w,self.img_h = int(self.img_oW/self.m_W*w), int(self.img_oH/self.m_H*h)
+        self.image = self.copy_of_image.resize((self.img_w,self.img_h))
         self.photo = ImageTk.PhotoImage(self.image)
         self.label.config(image = self.photo)
         self.label.image = self.photo #avoid garbage collection
