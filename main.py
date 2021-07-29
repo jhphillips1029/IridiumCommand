@@ -135,7 +135,8 @@ def draw_layout(w,h):
     
     # Widget Selector Bar
     for i in range(num_frames):
-        ind_color = colors['grey'] if i!= active_frame else colors['red']
+        passive = 'black' if socket_frame.alerting else colors['grey']
+        ind_color = passive if i!= active_frame else colors['red']
         canvas.create_rounded_rectangle(0,(330+45*i)/HEIGHT*height,135/WIDTH*width,(370+45*i)/HEIGHT*height,(45)/HEIGHT*height,fill=ind_color,outline='')
         canvas.create_rectangle(0,(330+45*i)/HEIGHT*height,105/WIDTH*width,(370+45*i)/HEIGHT*height,fill='black',outline='')
     canvas.create_rectangle(0,(330+45*num_frames)/HEIGHT*h,100/WIDTH*w,h,fill=colors['grey'],outline='')

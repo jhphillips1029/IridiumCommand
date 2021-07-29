@@ -204,7 +204,8 @@ class Overview(Widget.Widget):
                                              outline='')
         
         for i in range(len(self.btns)):
-            ind_color = self.master.colors['red'] if i==self.active_cmd else self.master.colors['grey']
+            passive = 'black' if self.master.alerting else self.master.colors['grey']
+            ind_color = self.master.colors['red'] if i==self.active_cmd else passive
             
             self.canvas.create_rounded_rectangle((self.w-130)/self.m_W*w,
                                                  (65+40*i)/self.m_H*h,
