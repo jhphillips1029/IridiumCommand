@@ -352,6 +352,11 @@ def update_log_window():
                              fg=colors[label_colors[2]])
     
     log_window.after(1000,update_log_window)
+    
+    
+def my_func(event):
+    print('Hello, World!')
+    messagebox.showinfo('Info Box','Created by God himself.')
 
         
 if __name__=='__main__':
@@ -364,6 +369,7 @@ if __name__=='__main__':
     root.bind('<Control-Key-q>',close_shortcut)
     root.protocol("WM_DELETE_WINDOW",_close_shortcut)
     root.bind("<Configure>",resize)
+    root.bind('<Alt-p>',my_func)
 
     canvas = tk.Canvas(root,width=WIDTH,height=HEIGHT,borderwidth=0,highlightthickness=0,bg='black')
     canvas.place(x=0,y=0)
