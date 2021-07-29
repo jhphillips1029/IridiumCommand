@@ -38,7 +38,7 @@ import widgets.Widget as Widget
 
 class Map(Widget.Widget):
     def __init__(self,master,x,y,m_W,m_H,w,h):
-        Widget.Widget.__init__(self,master,x,y,m_W,m_H,w,h,bg='blue')
+        Widget.Widget.__init__(self,master,x,y,m_W,m_H,w,h,bg='black')
         self.img_oW,self.img_oH = int(w),int(h)
         self.img_w,self.img_h = int(w),int(h)
         
@@ -49,7 +49,7 @@ class Map(Widget.Widget):
         self.center_pt = self.DEFAULT_center_pt
         self.zoom = self.DEFAULT_zoom
         
-        self.canvas = tk.Canvas(self,borderwidth=0,highlightthickness=0,bg='red')
+        self.canvas = tk.Canvas(self,borderwidth=0,highlightthickness=0,bg='black')
         self.add_comp(self.canvas,0,0,w,h)
         
         # Necessary to be able to retrieve political map data (streets, buildings, names, etc., etc.)
@@ -68,7 +68,7 @@ class Map(Widget.Widget):
         
         self.gen_plt([self.DEFAULT_center_pt[1]],[self.DEFAULT_center_pt[0]])
 
-        self.label = tk.Label(self,bg='pink',anchor='nw')
+        self.label = tk.Label(self,bg='black',anchor='nw')
         self.label.pack(fill=tk.BOTH)
         self.gen_img()
         
@@ -84,7 +84,7 @@ class Map(Widget.Widget):
         self.fig = plt.figure(frameon=False)
         self.ax = plt.subplot(111,projection=self.osm_img.crs)
         self.ax.set_axis_off()
-        self.fig.patch.set_facecolor('grey')
+        self.fig.patch.set_facecolor('black')
 
         extent = [center_pt[1]-(zoom*2.0),center_pt[1]+(zoom*2.0),center_pt[0]-zoom,center_pt[0]+zoom]
         self.ax.set_extent(extent)
