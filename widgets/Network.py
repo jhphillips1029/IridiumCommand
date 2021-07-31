@@ -97,11 +97,13 @@ class Network(Widget.Widget):
                 
                 
     def set_alert(self,level):
+        print('setting alert')
         if self.MASTER:
             try:
                 for addr in self.client_addresses:
                     self.send(addr[0],addr[1],'code:self.master.set_alert({})'.format(level))
-            except: pass
+            except Exception as es:
+                print('{}'.format(e))
                       
                       
     def connect(self):
