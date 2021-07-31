@@ -63,25 +63,25 @@ class Tracker(Widget.Widget):
         self.titles = []
         self.labels = []
         
-        title = tk.Label(self,text='Coordinates:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
+        title = tk.Label(self,text='Coordinates:',font=('Courier New',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
         self.add_comp(title,0.5*self.w+130,20,155,25)
         self.titles.append(title)
         
-        label = tk.Label(self,text='Lat: {:9.4f}\nLon: {:9.4f}'.format(*self.Map.center_pt),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        label = tk.Label(self,text='Lat: {:9.4f}\nLon: {:9.4f}'.format(*self.Map.center_pt),font=('Courier New',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
         self.add_comp(label,0.5*self.w+135,40,100,30)
         self.labels.append(label)
         self.latlon_label = label
         
-        title = tk.Label(self,text='Altitude:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
+        title = tk.Label(self,text='Altitude:',font=('Courier New',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
         self.add_comp(title,0.5*self.w+130,85,155,25)
         self.titles.append(title)
         
-        label = tk.Label(self,text='Alt: {:7.2f} m'.format(self.Map.DEFAULT_elev),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        label = tk.Label(self,text='Alt: {:7.2f} m'.format(self.Map.DEFAULT_elev),font=('Courier New',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
         self.add_comp(label,0.5*self.w+135,105,100,15)
         self.labels.append(label)
         self.alt_label = label
         
-        label = tk.Label(self,text='Alt: {:7.1f} ft'.format(self.Map.DEFAULT_elev*3.28084),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        label = tk.Label(self,text='Alt: {:7.1f} ft'.format(self.Map.DEFAULT_elev*3.28084),font=('Courier New',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
         self.add_comp(label,0.5*self.w+135,120,100,15)
         self.labels.append(label)
         self.altft_label = label
@@ -90,28 +90,28 @@ class Tracker(Widget.Widget):
         url = r'https://nationalmap.gov/epqs/pqs.php?'
         result = requests.get((url + urllib.parse.urlencode(params)))
         agl = float(result.json()['USGS_Elevation_Point_Query_Service']['Elevation_Query']['Elevation']) - self.Map.DEFAULT_elev
-        label = tk.Label(self,text='AGL: {:7.2f} m'.format(agl),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        label = tk.Label(self,text='AGL: {:7.2f} m'.format(agl),font=('Courier New',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
         self.add_comp(label,0.5*self.w+135,135,100,15)
         self.labels.append(label)
         self.agl_label = label
         
-        title = tk.Label(self,text='Velocities:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        title = tk.Label(self,text='Velocities:',font=('Courier New',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
         self.add_comp(title,0.5*self.w+130,165,155,25)
         self.titles.append(title)
         
-        label = tk.Label(self,text='Vert: {:7.2f} m/s'.format(0),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        label = tk.Label(self,text='Vert: {:7.2f} m/s'.format(0),font=('Courier New',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
         self.add_comp(label,0.5*self.w+135,190,125,15)
         self.labels.append(label)
         self.vertvel_label = label
         
-        label = tk.Label(self,text='Grnd: {:7.2f} m/s'.format(0),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        label = tk.Label(self,text='Grnd: {:7.2f} m/s'.format(0),font=('Courier New',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
         self.add_comp(label,0.5*self.w+135,205,125,15)
         self.labels.append(label)
         self.grndvel_label = label
         
         p_theory = self.p_0*np.exp(-((self.g*self.Map.DEFAULT_elev*self.M)/(self.T_0*self.R_0)))
         pcntg = 100*(1-p_theory/self.p_0)
-        label = tk.Label(self,text='You are above {:6.2f}% of\nthe atmosphere.'.format(pcntg),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        label = tk.Label(self,text='You are above {:6.2f}% of\nthe atmosphere.'.format(pcntg),font=('Courier New',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
         self.add_comp(label,0.5*self.w+130,235,155,30)
         self.labels.append(label)
         self.pcntg_label = label
@@ -124,7 +124,7 @@ class Tracker(Widget.Widget):
         for x,y,s,c in zip(x_coords,y_coords,symbols,cmds):
             button = tk.Button(self,
                                text=s,
-                               font=('Arial',18),
+                               font=('Courier New',18),
                                command=c,
                                highlightthickness=0,
                                bd=0,

@@ -97,7 +97,6 @@ class Network(Widget.Widget):
                 
                 
     def set_alert(self,level):
-        print('setting alert')
         if self.MASTER:
             try:
                 for addr in self.client_addresses:
