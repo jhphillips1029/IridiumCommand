@@ -322,6 +322,11 @@ class WidgetSocket(tk.Frame):
         resize('dummy_resize')
         alert_ring()
         
+        for frame in self.frames:
+            try:
+                frame._set_alert(level-1)
+            except: pass
+        
         
 class Splash(tk.Toplevel):
     def __init__(self,parent):
