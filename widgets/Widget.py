@@ -96,8 +96,14 @@ class Widget(tk.Frame):
         return self.components[i][0]
         
         
-    def close(self):
-        pass
+    def _close(self):
+        if 'close' in dir(self):
+            self.close()
+            
+            
+    def _set_alert(self,level):
+        if 'set_alert' in dir(self):
+            self.set_alert(level)
         
         
     def _set_profile(self,profile):

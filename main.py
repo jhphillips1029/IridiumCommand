@@ -37,8 +37,9 @@ from time import strftime
 import glob
 import os
 import os.path
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageGrab
 import traceback
+import threading
 
 # Setup a color theme    
 colors = {
@@ -178,7 +179,7 @@ def time():
 
 def close_shortcut(event):
     for frame in frames:
-        frame.close()
+        frame._close()
         
     socket_frame.log_file.close()
         
@@ -228,7 +229,10 @@ def resize(event):
             socket_frame.width,socket_frame.height = width,height
             
             for frame in frames:
-                frame.resize(width,height)
+                try:
+                    frame.resize(width,height)
+                except:
+                    socket_frame.log('{} failed to resize.'.format(str(frame).split('.!')[-1].capitalize()),'ERROR')
             set_frame(active_frame)
             
             image = img_copy.resize((int(logo_w/WIDTH*width),int(logo_h/HEIGHT*height)))
@@ -299,7 +303,10 @@ class WidgetSocket(tk.Frame):
         self.log('profile \'{}\' set'.format(profile['name']))
         self.profile = profile
         for frame in self.frames:
-            frame._set_profile(profile)
+            try:
+                frame._set_profile(profile)
+            except:
+                self.log('Profile not set for {}'.format(str(frame).split('.!')[-1].capitalize()),'ERROR')
             
             
     def set_alert(self,level):
@@ -321,6 +328,7 @@ class Splash(tk.Toplevel):
         tk.Toplevel.__init__(self,parent,bg='black')
         self.title('ICC')
         self.geometry('{}x{}'.format(200,150))
+        self.dots = 3
     
         image = Image.open('logo.png')
         img_copy= image.copy()
@@ -356,9 +364,7 @@ def update_log_window():
     
     
 def my_func(event):
-    print('Hello, World!')
     messagebox.showinfo('Info Box','Created by God himself.')
-
         
 if __name__=='__main__':
     root = tk.Tk()

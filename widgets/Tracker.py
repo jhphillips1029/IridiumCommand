@@ -217,7 +217,7 @@ class Tracker(Widget.Widget):
             return;
         else:
             try:
-                urlData = requests.get("https://borealis.rci.montana.edu/flight?uid={}&format=csv".format(self.bc.uid)).content
+                urlData = requests.get("https://borealis.rci.montana.edu/flight?uid={}&format=csv".format(self.bc.uid),verify=False).content
                 data = pd.read_csv(io.StringIO(urlData.decode('UTF-8')))
             except:
                 data = self.data

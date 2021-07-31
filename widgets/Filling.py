@@ -181,16 +181,16 @@ class Filling(Widget.Widget):
                       X+100,Y+20+(h+5)*len(self.entry_names),100,h+10)
                       
         self.output_text = ['Outputs:',
-                            ' P_req: {:11.6f} MPa',
-                            '        {:11.6f} psi',
-                            ' v_asc: {:11.6f} m/s',
-                            '        {:11.6f} mph',
-                            'L_neck: {:11.6f} g',
-                            '        {:11.6f} lbs',
-                            ' V_bln: {:11.6f} m^3',
-                            '        {:11.6f} cf',
-                            ' D_bln: {:11.6f} m',
-                            '        {:11.6f} ft'
+                            ' P_req: {:12.6f} MPa',
+                            '        {:12.6f} psi',
+                            ' v_asc: {:12.6f} m/s',
+                            '        {:12.6f} mph',
+                            'L_neck: {:12.6f} g',
+                            '        {:12.6f} lbs',
+                            ' V_bln: {:12.6f} m^3',
+                            '        {:12.6f} cf',
+                            ' D_bln: {:12.6f} m',
+                            '        {:12.6f} ft'
                            ]
         self.output_block_index_start = len(self.components)
         self.max_line_count = max([len(line) for line in self.output_text])
