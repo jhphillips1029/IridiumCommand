@@ -101,6 +101,7 @@ class Network(Widget.Widget):
             try:
                 for addr in self.client_addresses:
                     self.send(addr[0],addr[1],'code:self.master.set_alert({})'.format(level))
+            except: pass
                       
                       
     def connect(self):
