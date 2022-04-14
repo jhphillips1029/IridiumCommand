@@ -32,6 +32,10 @@ import widgets.Widget as Widget
 from widgets.Widget import _create_rounded_rectangle
 from functools import partial
 import widgets.Emailer as Emailer
+import datetime
+import base64
+import threading
+import re
 
 EMAIL_ADDRESS = 'iridium.msgc@gmail.com'
 
@@ -51,6 +55,9 @@ class Overview(Widget.Widget):
             '110',
             '111'
         ]
+        
+        self.fields = {}
+        self.UTC = -6
         
         self.canvas = tk.Canvas(self,borderwidth=0,highlightthickness=0,bg='black')
         self.add_comp(self.canvas,0,0,w,h)
@@ -72,9 +79,10 @@ class Overview(Widget.Widget):
         for i in range(len(self.btns)):
             self.add_comp(self.btns[i],self.w-100,65+40*i,100,35)
     
-        X = 550
+        X = 575
         Y = 115
         self.X_block,self.Y_block = X,Y
+        self.ci_send_btn = len(self.components)
         self.send_cmd_btn = tk.Button(self,
                                       text='Send Command',
                                       font=('Arial',10,'bold'),
@@ -129,7 +137,7 @@ class Overview(Widget.Widget):
         self.alert_button_colors = {key:key for key in self.master.alert_colors}
         self.alert_button_colors['Cancel']='#3e3e3e'
         self.X_alert_block = 110
-        self.Y_alert_block = 100
+        self.Y_alert_block = 75
         for i,alert_color in enumerate(self.master.alert_colors[::-1]+['Cancel']):
             self.add_comp(tk.Button(self,
                                     text=alert_color.capitalize()+' Alert',
@@ -145,9 +153,63 @@ class Overview(Widget.Widget):
                                    ),
                           self.X_alert_block,self.Y_alert_block+i*55,100,30)
                           
+        self.ci_conf_block = len(self.components)
+        self.X_conf_block,self.Y_conf_block = 300,65
+        self.add_comp(tk.Label(self,
+                               text='Confirmation Data:',
+                               font=('Arial',10),
+                               anchor='w',
+                               fg=self.master.colors['pale yellow'],
+                               bg='black'
+                              ),
+                      self.X_conf_block,self.Y_conf_block,175,20)
+        for i,l in enumerate(['Date','Cmd','MTMSN','Queue']):
+            self.add_comp(tk.Label(self,
+                                   text='{}:{}'.format(l,' '*(5-len(l))),
+                                   font=('Arial',10),
+                                   anchor='w',
+                                   fg=self.master.colors['pale yellow'],
+                                   bg='black'
+                                  ),
+                          self.X_conf_block+10,self.Y_conf_block+(i+1)*25,50,20)
+        for i,l in enumerate(['Date','Cmd','MTMSN','Queue']):
+            self.add_comp(tk.Label(self,
+                                   text='N/A'.format(l,' '*(5-len(l))),
+                                   font=('Arial',10),
+                                   anchor='w',
+                                   fg=self.master.colors['pale yellow'],
+                                   bg='black'
+                                  ),
+                          self.X_conf_block+65,self.Y_conf_block+(i+1)*25,150,20)
+        self.add_comp(tk.Label(self,
+                               text='Previous Command:',
+                               font=('Arial',10),
+                               anchor='w',
+                               fg=self.master.colors['pale yellow'],
+                               bg='black'
+                              ),
+                      self.X_conf_block,self.Y_conf_block+150,150,20)
+        self.add_comp(tk.Label(self,
+                               text='N/A',
+                               font=('Arial',10),
+                               anchor='w',
+                               fg=self.master.colors['pale yellow'],
+                               bg='black'
+                              ),
+                      self.X_conf_block+10,self.Y_conf_block+175,150,20)
+                      
+        self.bind('<Control-e>',self.enable_send)
+                          
         self.update()
         tk.Canvas.create_rounded_rectangle = _create_rounded_rectangle
         self.redraw(m_W,m_H)
+        
+        
+    def enable_send(self,event):
+        if self.components[self.ci_send_btn][0]['state'] == 'disabled':
+            self.components[self.ci_send_btn][0]['state'] = 'normal'
+        else:
+            self.components[self.ci_send_btn][0]['state'] = 'disabled'
         
         
     def redraw(self,w,h):
@@ -244,7 +306,7 @@ class Overview(Widget.Widget):
             self.btns[i].configure(text=list(self.profile['commands'].keys())[i])
             
         self.labels[-2].configure(text='Profile: {}'.format(self.profile['name']))
-        self.labels[-1].configure(text='Profile: {}'.format(self.profile['imei']))
+        self.labels[-1].configure(text='IMEI: {}'.format(self.profile['imei']))
         
         
     def send_command(self):
@@ -253,12 +315,69 @@ class Overview(Widget.Widget):
             cmd = bin(self.active_cmd)[2:].zfill(3)
             imei = self.master.profile['imei']
             if messagebox.askyesno(title='Confirmation',message='Is this correct:\n\nCmd: {} ({})\nIMEI: {}'.format(alias,cmd,imei)):
-                ret = self.send_iridium_cmd(cmd,imei)
+                try:
+                    ret = self.send_iridium_cmd(cmd,imei)
+                except:
+                    self.master.log('Unable to send command.','ERROR')
+                    return;
                 self.master.log('Command ({},{}) sent. ({})'.format(cmd,imei[-4:],ret['labelIds'][0]))
+                
+                self.components[self.ci_send_btn][0]['state'] = 'disabled'
+        
+                n_labels = 4
+                for i in range(n_labels):
+                    self.components[self.ci_conf_block+1+n_labels+i][0].configure(text='-')
             else:
                 self.master.log('Command aborted.')
         else:
             self.master.log('No profile selected!',lvl='DEBUG')
+            
+        thread = threading.Thread(target=self.check_for_confirm)
+        thread.start()
+            
+            
+    def check_for_confirm(self):
+        start = datetime.datetime.now()
+        srvc = Emailer.gmail_authenticate()
+        
+        while True:
+            msgs = Emailer.read_messages(srvc)
+            
+            froms = [msg['payload']['headers'][0]['value'] for msg in msgs]
+            txts = [msg['payload']['parts'][0]['body']['data'] for msg in msgs]
+            txts = [txt.replace('-','+').replace('_','/') for txt in txts]
+            txts = [base64.b64decode(txt).decode('utf-8') for txt in txts]
+            #times = [[msg['payload']['headers'][i]['value'].split(';')[-1].strip().split(' ') for i in range(len(msg['payload']['headers'])) if msg['payload']['headers'][i]['name']=='Date'][-1] for msg in msgs]
+            #times = ['{} {} {} {}'.format(*t[1:]) for t in times]
+            #times = [datetime.datetime.strptime(t,'%d %b %Y %H:%M:%S') for t in times]
+            times = [txt.split('\r\n')[3].split(': ')[-1].strip() if txt!='' else 'Blah Jan  1 00:00:00 1999' for txt in txts]
+            times = [datetime.datetime.strptime(' '.join(t.split(' ')[1:]),'%b %d %H:%M:%S %Y') for t in times]
+            times = [t + datetime.timedelta(hours=self.UTC) for t in times]
+            #print(['{:<0d}:{:<0d}:{:<0d}'.format(t.hour,t.minute,t.second) for t in times])
+            
+            msgs = [(t,f,s) for t,f,s in zip(times,froms,txts)]
+            msgs = [msg for msg in msgs if start<msg[0]]
+            
+            if msgs:
+                break
+                
+        self.fields['time'] = ' '.join(msgs[0][-1].split('\r\n')[3].split(': ')[-1].strip().split(' ')[1:-1])+' UTC'
+        self.fields['cmd'] = msgs[0][-1].split('\r\n')[5].split(':')[-1].strip().replace('.sbd','')
+        self.fields['cmd'] = '{} ({})'.format(list(self.master.profile['commands'].keys())[list(self.master.profile['commands'].values()).index(self.fields['cmd'])],self.fields['cmd'])
+        self.fields['mtmsn'] = re.findall('[0-9]+',msgs[0][-1].split('\r\n')[8].split(',')[0])[0]
+        self.fields['queue'] = re.findall('[0-9]+',msgs[0][-1].split('\r\n')[8].split(',')[-1])[0]
+        
+        n_labels = 4
+        for i in range(n_labels):
+            self.components[self.ci_conf_block+1+n_labels+i][0].configure(text=self.fields[list(self.fields.keys())[i]])
+        self.components[self.ci_conf_block+2+2*n_labels][0].configure(text=self.fields['cmd'])
+                
+        self.components[self.ci_send_btn][0]['state'] = 'normal'
+                
+        #print(self.fields)
+        #print('Confirmation received.')
+        self.master.log('Confirmation received')
+        return;
     
     
     def send_iridium_cmd(self,cmd,imei):

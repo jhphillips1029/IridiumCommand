@@ -48,6 +48,9 @@ class Map(Widget.Widget):
         
         self.center_pt = self.DEFAULT_center_pt
         self.zoom = self.DEFAULT_zoom
+        self.fig = None
+        self.copy_of_image = None
+        self.cx = self.cy = [0]
         
         self.canvas = tk.Canvas(self,borderwidth=0,highlightthickness=0,bg='black')
         self.add_comp(self.canvas,0,0,w,h)
@@ -65,24 +68,30 @@ class Map(Widget.Widget):
             return img, self.tileextent(tile), 'lower'
         cimgt.OSM.get_image = image_spoof
         self.osm_img = cimgt.OSM()
-        
-        self.gen_plt([self.DEFAULT_center_pt[1]],[self.DEFAULT_center_pt[0]])
 
         self.label = tk.Label(self,bg='black',anchor='nw')
         self.label.pack(fill=tk.BOTH)
-        self.gen_img()
+        
+        try:
+            self.gen_plt([self.DEFAULT_center_pt[1]],[self.DEFAULT_center_pt[0]])
+            self.gen_img()
+        except:
+            self.master.master.log('Unable to generate plots.','ERROR')
         
         
-    def gen_plt(self,x,y,decorator='ro-',zoom=0.001,center_pt=None,**kwargs):
+    def gen_plt(self,x,y,decorator='ro-',zoom=0.001,center_pt=None,multidata=False,**kwargs):
         if center_pt is None:
-            center_pt = (sum(y)/len(y),sum(x)/len(x))
+            center_pt = (list(y)[-1],list(x)[-1])
         if zoom<=0:
             zoom = self.DEFAULT_zoom
         self.center_pt = center_pt
         self.zoom = zoom
         
-        self.fig = plt.figure(frameon=False)
-        self.ax = plt.subplot(111,projection=self.osm_img.crs)
+        if self.fig is not None:
+            self.fig.delaxes(self.ax)
+        
+        self.fig = plt.figure('MAP',frameon=False)
+        self.ax = self.fig.add_subplot(111,label="MAP",projection=self.osm_img.crs)
         self.ax.set_axis_off()
         self.fig.patch.set_facecolor('black')
 
@@ -93,7 +102,14 @@ class Map(Widget.Widget):
         scale = (scale<20) and scale or 19
         self.ax.add_image(self.osm_img, int(scale))
 
-        self.ax.plot(x,y,decorator,transform=ccrs.Geodetic())
+        if not multidata:
+            self.ax.plot(x,y,decorator,transform=ccrs.Geodetic())
+        else:
+            for i,(xs,ys) in enumerate(zip(x,y)):
+                if type(decorator)==type(''):
+                    self.ax.plot(xs,ys,decorator,transform=ccrs.Geodetic())
+                else:
+                    self.ax.plot(xs,ys,decorator[i],transform=ccrs.Geodetic())
         
         
     def gen_img(self):
@@ -114,6 +130,9 @@ class Map(Widget.Widget):
         
         
     def redraw(self,w,h):
+        if self.copy_of_image is None:
+            return;
+    
         self.img_w,self.img_h = int(self.img_oW/self.m_W*w), int(self.img_oH/self.m_H*h)
         self.image = self.copy_of_image.resize((self.img_w,self.img_h))
         self.photo = ImageTk.PhotoImage(self.image)

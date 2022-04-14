@@ -4,7 +4,12 @@
 Emailer.py
 Balloon_Coordinates.py
 Map.py
+Cadastral.py
 
 # Widgets to ignore
 Demo.py
 HASP.py
+Network.py
+Gnd_Stn.py
+#Filling.py
+#Adv_Profiles.py

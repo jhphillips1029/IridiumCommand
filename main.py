@@ -304,7 +304,8 @@ class WidgetSocket(tk.Frame):
         self.profile = profile
         for frame in self.frames:
             try:
-                frame._set_profile(profile)
+                #frame._set_profile(profile)
+                threading.Thread(target=frame._set_profile,args=(profile,)).start()
             except:
                 self.log('Profile not set for {}'.format(str(frame).split('.!')[-1].capitalize()),'ERROR')
             

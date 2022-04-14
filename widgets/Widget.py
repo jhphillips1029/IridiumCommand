@@ -69,6 +69,7 @@ class Widget(tk.Frame):
 
     def show(self,w,h):
         self.place(x=self.x/self.m_W*w,y=self.y/self.m_H*h)
+        self.focus_set()
 
 
     def hide(self):
@@ -110,6 +111,8 @@ class Widget(tk.Frame):
         if 'set_profile' in dir(self):
             # If 'set_profile' is an actual function in this widget, call it.
             self.set_profile()
+            
+        return;
         
       
 # For creating all the pretty little ponies  

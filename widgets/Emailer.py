@@ -111,4 +111,11 @@ def build_message(destination,obj,body,attachments=[]):
     
 def send_message(service,destination,obj,body,attachments=[]):
     return service.users().messages().send(userId="me",body=build_message(destination,obj,body,attachments)).execute()
+    
+    
+def read_messages(service,num_read=5):
+    result = service.users().messages().list(userId='me').execute()
+    messages = result.get('messages')
+    txts = [service.users().messages().get(userId='me',id=msg['id']).execute() for msg in messages[:num_read]]
+    return txts
 
