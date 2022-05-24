@@ -1,23 +1,23 @@
 """
--------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 MIT License
-Copyright (c) 2021 Joshua H. Phillips
+Copyright (c) 2022 Joshua H. Phillips
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
--------------------------------------------------------------------------------
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+----------------------------------------------------------------------------
 
 This widget uses Map.py in conjunction with Ronnel's scraper to download data from Sierra's website in order to render a map tracking the balloon's progress.
 """
@@ -43,7 +43,29 @@ import traceback
 
 
 class Tracker(Widget.Widget):
+    '''
+    Displays the location of the balloon as well as some fligh statistics
+    '''
+
     def __init__(self,master,x,y,m_W,m_H,w,h):
+        '''
+        The initialization function
+        
+        Parameters:
+        self         (Widget): Required for object functions
+        master (WidgetSocket): The widget socket
+        x               (int): The x-coordinate of the top-left corner
+        y               (int): The y-coordinate of the top-left corner
+        m_W             (int): The width of the main application window
+        m_H             (int): The height of the main application window
+        w               (int): The width of the widget
+        h               (int): The height of the widget
+        
+        Returns:
+        None
+        '''
+    
+        # Use parent class constructor for basic things and add ability to create rounded rectangle
         Widget.Widget.__init__(self,master,x,y,m_W,m_H,w,h,bg='black')
         tk.Canvas.create_rounded_rectangle = _create_rounded_rectangle
         self.img_oW,self.img_oH = int(0.5*self.w-110),150
@@ -164,6 +186,10 @@ class Tracker(Widget.Widget):
         
         
     def gen_plt(self):
+        '''
+        Generate a plot of the balloons altitude
+        '''
+    
         self.fig = plt.figure('ALTITUDE')
         self.ax = self.fig.add_subplot(111,label='ALTITUDE')
         
@@ -171,6 +197,10 @@ class Tracker(Widget.Widget):
         
         
     def gen_img(self):
+        '''
+        Converts plot to image and updates image frame
+        '''
+        
         buff = io.BytesIO()
         self.fig.savefig(buff,format='png')
         plt.close(self.fig)
@@ -188,6 +218,10 @@ class Tracker(Widget.Widget):
     
         
     def redraw(self,w,h):
+        '''
+        Updates all graphical components
+        '''
+    
         # All the pretty little ponies
         self.canvas.delete('all')
         self.canvas.create_rounded_rectangle(0,
@@ -240,12 +274,20 @@ class Tracker(Widget.Widget):
         
         
     def move_map(self,ind):
+        '''
+        Moves the map in the direction indicated
+        '''
+    
         # Threading to prevent freezing in main thread
         t1 = Thread(target=self._move_map,args=(ind,))
         t1.start()
     
     
     def _move_map(self,ind):
+        '''
+        Wrapper for move_map; determine direction indicator
+        '''
+    
         cntr = list(self.Map.center_pt)
         zoom = self.Map.zoom
         
@@ -272,6 +314,10 @@ class Tracker(Widget.Widget):
         
         
     def _update_coords(self,clear):
+        '''
+        Download the flight csv from Sierra's website and update current flight data
+        '''
+    
         if self.bc is None:
             return;
         else:
@@ -334,6 +380,10 @@ class Tracker(Widget.Widget):
         
 
     def update_coords(self,clear=False):
+        '''
+        Wrapper function for _update_coords
+        '''
+    
         # Threading to prevent freezing in main thread
         t1 = Thread(target=self._update_coords,args=(clear,))
         t1.start()
@@ -341,6 +391,10 @@ class Tracker(Widget.Widget):
         
         
     def set_profile(self):
+        '''
+        Set flight command profile
+        '''
+    
         try:
             self.bc = BC.Balloon_Coordinates(self.master.profile['imei'])
         except:
@@ -351,6 +405,18 @@ class Tracker(Widget.Widget):
         
         
     def autocrop_image(self,image,border=0):
+        '''
+        Crop image automatically to its content
+        
+        Parameters:
+        self (Widget): Required for object functions
+        image (Image): The image to be cropped
+        border  (int): The extra border to include with the cropped image
+        
+        Returns:
+        Image: The cropped image
+        '''
+    
         # Get the bounding box
         bbox = image.getbbox()
 

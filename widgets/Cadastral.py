@@ -1,23 +1,23 @@
 """
--------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 MIT License
-Copyright (c) 2021 Joshua H. Phillips
+Copyright (c) 2022 Joshua H. Phillips
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
--------------------------------------------------------------------------------
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+----------------------------------------------------------------------------
 
 This is a wrapper class that uses cartopy to create a map, plot data points to it, and render the result in tkinter.
 """
@@ -33,6 +33,16 @@ import zipfile
 
 
 def get_cadastral_by_county(county):
+    """
+    Get the cadastral data for a specific county
+    
+    Parameters:
+    county (str): The name of the county
+    
+    Returns:
+    ???: Property data
+    """
+    
     zip_url = 'http://ftpgeoinfo.msl.mt.gov/Data/Spatial/MSDI/Cadastral/Parcels/{0}/{0}_SHP.zip'
     chunk_size = 128
     req = requests.get(zip_url.format(county),stream=True)
@@ -55,6 +65,17 @@ def get_cadastral_by_county(county):
 
 
 def get_county(coord,lon=None):
+    """
+    Determine the county from coordinates
+    
+    Parameters:
+    coord (tuple,int): The coordinates or latitude of interest
+    lon         (int): The longitude of interest if only latitude was previously supplied
+    
+    Returns:
+    str: The name of the county
+    """
+
     if lon is not None:
         coord = (coord,lon)
     
@@ -64,6 +85,17 @@ def get_county(coord,lon=None):
 
 
 def check_point_in_shapes(coord,shapes):
+    """
+    Check if a coordinate point is in any of the given shapes
+    
+    Parameters:
+    coord (tuple): The coordinates of the point of interest
+    shapes (list): A list of shapes to check
+    
+    Returns:
+    tuple: The index of the shape in the list, the shape the coordinates are in(?)
+    """
+    
     poi = Point(coord)
     i_con = containter = None
     for i,feature in enumerate(shapes.shapeRecords()):
@@ -79,8 +111,29 @@ def check_point_in_shapes(coord,shapes):
     return i_con,container
 
 def get_transformers():
+    """
+    Retrieves what is necessary to convert between units in MTSL data to lat/lon
+    
+    Parameters:
+    None
+    
+    Returns:
+    ???: The necessary transformers
+    """
+
     return Transformer.from_crs('NAD83 / Montana','epsg:4326'),Transformer.from_crs('epsg:4326','NAD83 / Montana')
 
 def gen_owner_dict(i_con,shapes):
+    """
+    Get specific property ownership data
+    
+    Parameters:
+    i_con (int): Index of the property of interest
+    shapes (??): The list of properties
+    
+    Returns:
+    dict: Property ownership information
+    """
+    
     return {key:val for key,val in zip([s[0] for s in shapes.fields[1:]],shapes.records()[i_con])}
 

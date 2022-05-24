@@ -1,23 +1,23 @@
 """
--------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 MIT License
 Copyright (c) 2022 Joshua H. Phillips
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
--------------------------------------------------------------------------------
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+----------------------------------------------------------------------------
 
 This is the main program file. Enjoy.
 """
@@ -40,6 +40,8 @@ import os.path
 from PIL import Image, ImageTk, ImageGrab
 import traceback
 import threading
+import sys
+import serial
 
 # Setup a color theme    
 colors = {
@@ -67,6 +69,22 @@ alert_ring_show = False
 
 # For creating the rounded rectangles that are so iconic to this theme
 def _create_rounded_rectangle(self,x1,y1,x2,y2,radius,**kwargs):
+
+    """
+    For creating the rounded rectangle that are so iconic to this theme
+    
+    Parameters:
+    self     (tk Canvas): Required for object functions
+    x1             (int): The x-coordinate of the first corner of the rectangle
+    y1             (int): The y-coordinate of the first corner of the rectangle
+    x2             (int): The x-coordinate of the second corner of the rectangle, opposite the first corner
+    y2             (int): The y-coordinate of the second corner of the rectangle, opposite the first corner
+    radius         (int): The radius of the corners of the rounded rectangle
+    **kwargs       (var): Additional parameters passed to the function create_polygon
+    
+    Returns:
+    UnT: The rounded rectangle
+    """
     points = [x1+radius, y1,
               x1+radius, y1,
               x2-radius, y1,
@@ -93,6 +111,16 @@ tk.Canvas.create_rounded_rectangle = _create_rounded_rectangle
 
 
 def set_frame(num):
+    """
+    Show the active widget and hide all others
+    
+    Parameters:
+    num (int): The index for which widget is active
+    
+    Returns:
+    None
+    """
+
     global active_frame
     
     active_frame = num
@@ -103,6 +131,17 @@ def set_frame(num):
     
 
 def draw_layout(w,h):
+    """
+    Draws the various graphical garnishings for the theme.
+    
+    Parameters:
+    w (int): The width of the window
+    h (int): The height of the window
+    
+    Returns:
+    None
+    """
+
     global buttons,colors,MASTER_COLORS
     canvas.delete("all")
     canvas.config(width=w,height=h)
@@ -170,6 +209,16 @@ def draw_layout(w,h):
         
         
 def time():
+    """
+    Gets the current system time and updates the graphical display of the time
+    
+    Parameters:
+    None
+    
+    Returns:
+    None
+    """
+
     global time_str
     time_str = strftime('%Y-%m-%d %H:%M:%S')
     time_label.config(text=time_str)
@@ -178,6 +227,16 @@ def time():
 
 
 def close_shortcut(event):
+    """
+    Updates all frames of intent to close and closes application
+    
+    Parameters:
+    event (???): I don't know what this is but it's necessary
+    
+    Returns:
+    None
+    """
+    
     for frame in frames:
         frame._close()
         
@@ -187,6 +246,16 @@ def close_shortcut(event):
     
     
 def alert_ring():
+    """
+    Updates the colored ring around the widget socket for alerts
+    
+    Parameters:
+    None
+    
+    Returns:
+    None
+    """
+
     global alert_ring_show
     draw_layout(width,height)
     if alert_ring_show and socket_frame.alerting:
@@ -210,10 +279,30 @@ def alert_ring():
 
 # Wrapper for other methods of closing the window
 def _close_shortcut():
+    """
+    Wrapper method for close_shortcut
+    
+    Parameters:
+    None
+    
+    Returns:
+    None
+    """
+
     close_shortcut(None)
     
     
 def resize(event):
+    """
+    Handles main window resize events and resizes all loaded widgets
+    
+    Parameters:
+    event (???): Still don't know what this is
+    
+    Returns:
+    None
+    """
+
     global width,height
     if event=='dummy_resize' or str(event.widget)=='.':
         if event=='dummy_resize' or ((width != event.width) and (height != event.height)):
@@ -244,7 +333,26 @@ def resize(event):
             
 # The frame used as a socket for all the widgets
 class WidgetSocket(tk.Frame):
+    """
+    The socket for all individual sockets to slot into. Handles various updates
+    """
+
     def __init__(self,master,x,y,w,h):
+        """
+        The socket initialization function
+        
+        Parameters:
+        self     (Widget): Required for object functions
+        master (tk.Frame): The Tkinter frame the socket has been inserted into
+        x           (int): The x-coordinate of the top-left corner
+        y           (int): The y-coordinate of the top-left corner
+        w           (int): The width of the socket
+        h           (int): The height of the socket
+        
+        Returns:
+        None
+        """
+    
         super().__init__(master,width=w,height=h)
         self.place(x=x,y=y)
         
@@ -267,6 +375,16 @@ class WidgetSocket(tk.Frame):
         
         
     def init_log(self):
+        """
+        Initializes the log file and deletes old ones if over limit
+        
+        Parameters:
+        self (???): Required for object functions
+        
+        Returns:
+        None
+        """
+    
         files = glob.glob('logs/*.log')
         for file in files:
             with open(file,'r') as f:
@@ -294,12 +412,35 @@ class WidgetSocket(tk.Frame):
         
         
     def log(self,msg,lvl='INFO'):
+        """
+        Logs a message to both the log file and the log window
+        
+        Parameters:
+        self (???): Required for object functions
+        msg  (str): The message to be logged.
+        lvl  (str): The level delimiter for the logged message; default is 'INFO'
+        
+        Returns:
+        None
+        """
+    
         self.log_file.write('{}:{}$ {}\r\n'.format(strftime('%Y-%m-%d %H:%M:%S'),lvl,msg))
         self.log_lines.append('{}:{}$ {}\r\n'.format(strftime('%H:%M:%S'),lvl,msg))
         self.log_file.flush()
         
         
     def set_profile(self,profile):
+        """
+        Sets the command profile for the main application and updates all loaded widgets with profile
+        
+        Parameters:
+        self     (???): Required for object functions
+        profile (dict): Dictionary loaded from command profile JSON file
+        
+        Returns:
+        None
+        """
+    
         self.log('profile \'{}\' set'.format(profile['name']))
         self.profile = profile
         for frame in self.frames:
@@ -311,6 +452,17 @@ class WidgetSocket(tk.Frame):
             
             
     def set_alert(self,level):
+        """
+        Sets the alert level for the main application
+        
+        Parameters:
+        self  (???): Required for object functions
+        level (int): The alert level to be set; lower level is higher alert
+        
+        Returns:
+        None
+        """
+        
         level+=1
         self.alert_level = level
         self.alerting = self.alert_level>0
@@ -327,10 +479,52 @@ class WidgetSocket(tk.Frame):
             try:
                 frame._set_alert(level-1)
             except: pass
+            
+    def list_serial_ports(self):
+        """ Lists serial port names
+
+            :raises EnvironmentError:
+                On unsupported or unknown platforms
+            :returns:
+                A list of the serial ports available on the system
+        """
+        if sys.platform.startswith('win'):
+            ports = ['COM%s' % (i + 1) for i in range(256)]
+        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+            ports = glob.glob('/dev/tty[A-Za-z]*')
+        elif sys.platform.startswith('darwin'):
+            ports = glob.glob('/dev/tty.*')
+        else:
+            raise EnvironmentError('Unsupported platform')
+
+        result = []
+        for port in ports:
+            try:
+                s = serial.Serial(port)
+                s.close()
+                result.append(port)
+            except (OSError, serial.SerialException):
+                pass
+        return result
         
         
 class Splash(tk.Toplevel):
+    """
+    The splash screen for loading.
+    """
+    
     def __init__(self,parent):
+        """
+        The initialization function
+        
+        Parameters:
+        self   (???): Required for object functions
+        parent (???): The main application window
+        
+        Returns:
+        None
+        """
+
         tk.Toplevel.__init__(self,parent,bg='black')
         self.title('ICC')
         self.geometry('{}x{}'.format(200,150))
@@ -356,6 +550,16 @@ class Splash(tk.Toplevel):
         
         
 def update_log_window():
+    """
+    A function to update the log window with all new log data
+    
+    Parameters:
+    None
+    
+    Returns:
+    None
+    """
+
     log_window.configure(text='')
     len_longest_line = 0
     for line in socket_frame.log_lines:
@@ -370,31 +574,46 @@ def update_log_window():
     
     
 def my_func(event):
+    """
+    A secret surprise! Oh my!
+    
+    Parameters:
+    event (???): Nope. Still don't know.
+    
+    Returns:
+    None
+    """
+    
     messagebox.showinfo('Info Box','Created by God himself.')
         
 if __name__=='__main__':
+    # Create the main window with predefined geometry
     root = tk.Tk()
     root.withdraw()
     splash = Splash(root)
     root.geometry('{}x{}'.format(WIDTH,HEIGHT))
     root.title('Iridium Command Center')
     
+    # Add key bindings
     root.bind('<Control-Key-q>',close_shortcut)
     root.protocol("WM_DELETE_WINDOW",_close_shortcut)
     root.bind("<Configure>",resize)
     root.bind('<Alt-p>',my_func)
 
+    # Create drawing canvas
     canvas = tk.Canvas(root,width=WIDTH,height=HEIGHT,borderwidth=0,highlightthickness=0,bg='black')
     canvas.place(x=0,y=0)
     
+    # Create the widget socket
     socket_frame_coords = [185,330,WIDTH-185-30,HEIGHT-330-30]
     socket_frame = WidgetSocket(root,*socket_frame_coords)
     socket_frame.log('Started widget socket frame...',lvl='DEBUG')
 
-    # Importing and setting up widgets using an implicit import method
+    # Importing and setting up widgets using an implicit import method (I know, "implicit = bad" and all, but it works well so fuck off)
     modules = glob.glob('widgets/*.py')
     modules = [mod.replace('\\','/') for mod in modules]   # for the shit operating system known as Windows.
     try:
+        # Determine if there are widgets to ignore
         with open('widgets/.ignore','r') as f:
             ignores = ['widgets/'+line.strip() for line in f.readlines() if line[0]!='#' and line.strip()!='']
             _modules = modules.copy()
@@ -404,9 +623,11 @@ if __name__=='__main__':
                     socket_frame.log('Ignoring {}'.format(mod),lvl='DEBUG')
             
     except Exception as e:
+        # If unable to find use widgets/.ignore, load all but abstract widget class
         modules = [modules[i] for i in range(len(modules)) if modules[i]!='widgets/Widget.py']
     num_frames = len(modules)
 
+    # Import all modules found above
     for module in modules:
         try:
             _import = __import__(module.replace('/','.').replace('.py',''),fromlist=['*'])
@@ -418,6 +639,7 @@ if __name__=='__main__':
             socket_frame.log(str(e),lvl='ERROR')
             traceback.print_exc()
     
+    # Instantiate all modules imported
     succ_mod = []
     while True:
         break_me = True
@@ -453,10 +675,12 @@ if __name__=='__main__':
     mi = [ui[i] for i in range(len(ui)) if ui[i] not in ci]
     ci = ci+mi
     
+    # Add all the widgets to the widget socket
     frames = [frames[i] for i in ci]
     socket_frame.frames = frames
     num_frames = len(frames)
     
+    # Add selectors for all widgets
     btn_colors = ['yellow','pink','orange','pale blue','purple']
     for i in range(num_frames):
         btn = tk.Button(root,
@@ -473,18 +697,23 @@ if __name__=='__main__':
         buttons.append(btn)
         btn_coords[btn]=(0,330+45*i,40,100)
     
+    # Add various labels
+    # Title label
     label_colors = ['yellow','pale blue','pale yellow']
     title_label = tk.Label(text='Iridium Command Center',fg=colors[label_colors[0]],bg='black')
     labels[title_label] = [500,50,24]
     
+    # System time label
     time_label = tk.Label(text='',fg=colors[label_colors[1]],bg='black')
     labels[time_label] = [550,100,18]
     time()
     
+    # Log window
     log_window_nums = [110,10,350,200,8]
     log_window = tk.Label(root,anchor='sw',bg='black',fg=colors[label_colors[2]])
     update_log_window()
     
+    # Logo
     image = Image.open('logo.png')
     img_copy= image.copy()
     tk_image = ImageTk.PhotoImage(image)
@@ -493,14 +722,17 @@ if __name__=='__main__':
     logo_w,logo_h = image.width,image.height
     logo_label.place(x=WIDTH-logo_w-30,y=50)
     
+    # Prepare main window for display
     root.update()
     [frames[i].hide() if i!=active_frame else frames[i].show(width,height) for i in range(len(frames))]
     draw_layout(WIDTH,HEIGHT)
     
+    # Close splash screen
     socket_frame.log('Starting GUI...',lvl='DEBUG')
     splash.destroy()
     root.deiconify()
     
+    # Start main window
     root.update()
     if root.winfo_screenwidth()<WIDTH:
         r = root.winfo_screenwidth()/WIDTH

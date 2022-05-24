@@ -1,23 +1,23 @@
 """
--------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 MIT License
-Copyright (c) 2021 Joshua H. Phillips
+Copyright (c) 2022 Joshua H. Phillips
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
--------------------------------------------------------------------------------
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+----------------------------------------------------------------------------
 
 This is a wrapper class for the Google GMail API. It is used by Overview.py to send commands to the Iridium modem on the balloon.
 """
@@ -49,6 +49,16 @@ SCOPES = ['https://mail.google.com/']
 
 
 def gmail_authenticate():
+    """
+    Authenticate gmail credentials; requires credentials.json from Google Cloud services; creates token.pickle
+    
+    Parameters:
+    None
+    
+    Returns:
+    ???: Google authentication I guess
+    """
+
     creds = None
     # the file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first time
@@ -70,6 +80,17 @@ def gmail_authenticate():
     
 # Adds the attachment with the given filename to the given message
 def add_attachment(message,filename):
+    """
+    Add an attachment to the email
+    
+    Parameters:
+    message  (???): The email object to be sent
+    filename (str): The filename of the attachement to be attached
+    
+    Returns:
+    None
+    """
+
     content_type, encoding = guess_mime_type(filename)
     if content_type is None or encoding is not None:
         content_type = 'application/octet-stream'
@@ -96,6 +117,19 @@ def add_attachment(message,filename):
     message.attach(msg)
     
 def build_message(destination,obj,body,attachments=[]):
+    """
+    Construct the body of the email
+    
+    Parameters:
+    desitination (str): Who the email is to
+    obj          (str): Subject of the email
+    body         (str): The body of the email
+    attachments (list): The attachments to send
+    
+    Returns:
+    dict: Prepared email
+    """
+    
     if not attachments: # no attachments given
         message = MIMEText(body)
         message['to'] = destination
@@ -110,10 +144,35 @@ def build_message(destination,obj,body,attachments=[]):
     return {'raw':urlsafe_b64encode(message.as_bytes()).decode()}
     
 def send_message(service,destination,obj,body,attachments=[]):
+    """
+    Sends an email
+    
+    Parameters:
+    service      (???): The authenticated gmail service from above
+    destination  (str): Who the email is to
+    obj          (str): The subject line of the email
+    body         (str): The body of the email
+    attachments (list): The attachments to send
+    
+    Returns
+    ???: It returns something
+    """
+    
     return service.users().messages().send(userId="me",body=build_message(destination,obj,body,attachments)).execute()
     
     
 def read_messages(service,num_read=5):
+    """
+    Reads emails
+    
+    Parameters:
+    service  (???): The authenticated gmail service from above
+    num_read (int): The number of emails to read
+    
+    Returns:
+    list: A list of the bodies of the read emails
+    """
+    
     result = service.users().messages().list(userId='me').execute()
     messages = result.get('messages')
     txts = [service.users().messages().get(userId='me',id=msg['id']).execute() for msg in messages[:num_read]]

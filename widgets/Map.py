@@ -1,23 +1,23 @@
 """
--------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 MIT License
-Copyright (c) 2021 Joshua H. Phillips
+Copyright (c) 2022 Joshua H. Phillips
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
--------------------------------------------------------------------------------
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+----------------------------------------------------------------------------
 
 This is a wrapper class that uses cartopy to create a map, plot data points to it, and render the result in tkinter.
 """
@@ -37,7 +37,29 @@ import widgets.Widget as Widget
 
 
 class Map(Widget.Widget):
+    '''
+    Creates a map and displays it
+    '''
+
     def __init__(self,master,x,y,m_W,m_H,w,h):
+        '''
+        The initialization function
+        
+        Parameters:
+        self         (Widget): Required for object functions
+        master (WidgetSocket): The widget socket
+        x               (int): The x-coordinate of the top-left corner
+        y               (int): The y-coordinate of the top-left corner
+        m_W             (int): The width of the main application window
+        m_H             (int): The height of the main application window
+        w               (int): The width of the widget
+        h               (int): The height of the widget
+        
+        Returns:
+        None
+        '''
+    
+        # Use parent class constructor for basic things and add ability to create rounded rectangle
         Widget.Widget.__init__(self,master,x,y,m_W,m_H,w,h,bg='black')
         self.img_oW,self.img_oH = int(w),int(h)
         self.img_w,self.img_h = int(w),int(h)
@@ -57,6 +79,10 @@ class Map(Widget.Widget):
         
         # Necessary to be able to retrieve political map data (streets, buildings, names, etc., etc.)
         def image_spoof(self, tile):
+            '''
+            Spoof a user-agent to get tiles with political map data
+            '''
+            
             url = self._image_url(tile)
             req = Request(url)
             req.add_header('User-agent','Anaconda 3')
@@ -80,6 +106,24 @@ class Map(Widget.Widget):
         
         
     def gen_plt(self,x,y,decorator='ro-',zoom=0.001,center_pt=None,multidata=False,**kwargs):
+        '''
+        Generate the map using the data provided
+        
+        Parameters:
+        self     (Widget): Required for object functions
+        x          (list): Data to be plot (x-components/latitude coordinates)
+        y          (list): Data to be plot (y-components/longitude coordinates)
+        decorator   (str): Plot line appearance
+        zoom      (float): How far to zoom in
+        center_pt (tuple): The center point of the map
+        multidata  (bool): Whether or not there are multiple lists of data in x and y
+        **kwargs         : Additional parameters to be passed on to the plotting functions
+        
+        Returns:
+        None
+        '''
+    
+        # Determine center point if None
         if center_pt is None:
             center_pt = (list(y)[-1],list(x)[-1])
         if zoom<=0:
@@ -113,6 +157,10 @@ class Map(Widget.Widget):
         
         
     def gen_img(self):
+        '''
+        Convert the plot to image and update image frame
+        '''
+    
         buff = io.BytesIO()
         self.fig.savefig(buff,format='png')
         plt.close(self.fig)
@@ -130,6 +178,10 @@ class Map(Widget.Widget):
         
         
     def redraw(self,w,h):
+        '''
+        Update function for graphical components
+        '''
+    
         if self.copy_of_image is None:
             return;
     
@@ -141,6 +193,18 @@ class Map(Widget.Widget):
         
         
     def autocrop_image(self,image,border=0):
+        '''
+        Crop image automatically to its content
+        
+        Parameters:
+        self (Widget): Required for object functions
+        image (Image): The image to be cropped
+        border  (int): The extra border to include with the cropped image
+        
+        Returns:
+        Image: The cropped image
+        '''
+    
         # Get the bounding box
         bbox = image.getbbox()
 

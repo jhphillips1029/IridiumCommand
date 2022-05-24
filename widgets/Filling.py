@@ -1,23 +1,23 @@
 """
--------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 MIT License
-Copyright (c) 2021 Joshua H. Phillips
+Copyright (c) 2022 Joshua H. Phillips
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
--------------------------------------------------------------------------------
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+----------------------------------------------------------------------------
 
 This widget takes environmental and geophysical data to calculate the pressure differential in the helium tanks necessary to fill the balloon.
 """
@@ -26,21 +26,48 @@ This widget takes environmental and geophysical data to calculate the pressure d
 try:
     import tkinter as tk
     from tkinter import messagebox
+    from tkinter import simpledialog
 except ImportError:
     import Tkinter as tk
     from Tkinter import messagebox
+    from Tkinter import simpledialog
 import widgets.Widget as Widget
 from widgets.Widget import _create_rounded_rectangle
 import numpy as np
+import serial
+import json
     
 class Filling(Widget.Widget):
+    '''
+    The Filling widget calculates parameters for filling the balloon and launch
+    '''
+
     def __init__(self,master,x,y,m_W,m_H,w=300,h=300):
+        '''
+        The initialization function
+        
+        Parameters:
+        self         (Widget): Required for object functions
+        master (WidgetSocket): The widget socket
+        x               (int): The x-coordinate of the top-left corner
+        y               (int): The y-coordinate of the top-left corner
+        m_W             (int): The width of the main application window
+        m_H             (int): The height of the main application window
+        w               (int): The width of the widget
+        h               (int): The height of the widget
+        
+        Returns:
+        None
+        '''
+    
+        # Use parent class constructor for basic things and add ability to create rounded rectangle
         Widget.Widget.__init__(self,master,x,y,m_W,m_H,w,h,bg='black')
         tk.Canvas.create_rounded_rectangle = _create_rounded_rectangle
         
         self.canvas = tk.Canvas(self,width=w,height=h,bg='black',borderwidth=0,highlightthickness=0)
         self.add_comp(self.canvas,0,0,w,h)
         
+        # Thermodynamic curve fit coefficients
         c_0 =  0.99999683
         c_1 = -0.0090826951
         c_2 =  7.8736169e-5
@@ -53,6 +80,8 @@ class Filling(Widget.Widget):
         c_9 = -3.0994571e-20
         self.c_vals = [c_0,c_1,c_2,c_3,c_4,c_5,c_6,c_7,c_8,c_9]
         self.e_so = 6.1078
+        
+        # Field variables
         self.C_drags = {'latex':lambda m: 0.3572-0.04725*m,
                         'zero pressure':lambda m: 0.68
                        }
@@ -235,6 +264,16 @@ class Filling(Widget.Widget):
         
         
     def profile_fill(self):
+        '''
+        Fill in field values from values in command profile JSON
+        
+        Parameters:
+        self (Widget): Required for object functions
+        
+        Returns:
+        None
+        '''
+    
         keys = list(self.master.profile.keys())
         terms = ['Helium Purity',
                  'Tank Volume',
@@ -253,14 +292,84 @@ class Filling(Widget.Widget):
                 
                 
     def set_profile(self):
+        '''
+        Automatically fills applicable fields when profile loaded
+        
+        Parameters:
+        self (Widget): Required for object functions
+        
+        Returns:
+        None
+        '''
         self.profile_fill()
         
         
     def serial_fill(self):
-        messagebox.showinfo('Serial Fill','Serial Fill is currently under development. Please enter the values manually for the time being.')
-                      
+        '''
+        TODO: Complete ability to fill fields from serial by gathering ambient temperature, pressure, and humidity from Weather St. Rev 2 as well as pressure altitude
+        
+        Parameters:
+        self (Widget): Required for object functions
+        
+        Returns:
+        None
+        '''
+        
+        #messagebox.showinfo('Serial Fill','Serial Fill is currently under development. Please enter the values manually for the time being.')
+        
+        ports = self.master.list_serial_ports()
+        
+        index = 0
+        if ports:
+            if len(ports)>1:
+                index = simpledialog.askinteger('Title','Please choose:\n    {}'.format('\n    '.join(['{:2d}: {}'.format(i,p) for i,p in enumerate(ports)])),parent=self)
+        else:
+            return
+            
+        PORT = ports[index]
+        RATE = 9600
+        ser = serial.Serial()
+        ser.port = PORT
+        ser.baudrate = RATE
+        ser.setDTR(False)
+        ser.timeout = 2
+        ser.open()
+        
+        for i in range(2):
+            line = ser.readline().decode().strip()
+            if line and line[0]=='{':
+                me_dict = json.loads(line.replace('hPa','mbar'))
+        
+        '''
+        self.master.log('Ambient Temp:  {:.2f} *C'.format(me_dict['T'][0]),lvl='DEBUG')
+        self.master.log('Ambient Press: {:.2f} mbar'.format(me_dict['P'][0]),lvl='DEBUG')
+        self.master.log('Rel Humidity:  {:.2f} %'.format(me_dict['h'][0]),lvl='DEBUG')
+        self.master.log('Pressure Alt:  {:.2f} m'.format(me_dict['H'][0]),lvl='DEBUG')
+        '''
+        
+        keys = list(me_dict.keys())
+        terms = {'P':'Amb Pressure',
+                 'T':'Amb Temperature',
+                 'h':'Rel Humidity',
+                 'H':'Ground Elev'
+                }
+        for term in terms:
+            if term in keys:
+                i_start = self.input_block_comp_index_start
+                n = self.entry_names.index(terms[term])
+                self.components[i_start+n*3+1][0].configure(textvariable=tk.StringVar(self,value=me_dict[term][0]))
                       
     def calculate_fill(self):
+        '''
+        Calculate balloon fill and launch parameters; equations and method improved from flight director's spreadsheet
+        
+        Parameters:
+        self (Widget): Required for object functions
+        
+        Returns:
+        None
+        '''
+    
         N = 3
         start = self.input_block_comp_index_start
         stops = self.input_block_comp_index_start+N*len(self.entry_names)
@@ -351,6 +460,18 @@ class Filling(Widget.Widget):
         
         
     def redraw(self,w,h):
+        '''
+        Add all the thematic graphical embellishments
+        
+        Parameters:
+        self (Widget): Required for object functions
+        w       (int): Width of master window
+        h       (int): Height of master window
+        
+        Returns:
+        None
+        '''
+    
         self.canvas.delete('all')
     
         for off in [0,590]:

@@ -1,23 +1,23 @@
 """
--------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 MIT License
-Copyright (c) 2021 Joshua H. Phillips
+Copyright (c) 2022 Joshua H. Phillips
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
--------------------------------------------------------------------------------
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+----------------------------------------------------------------------------
 
 This widget sends the commands to the Iridium modem on the balloon via emails to Iridium.
 """
@@ -40,9 +40,29 @@ import re
 EMAIL_ADDRESS = 'iridium.msgc@gmail.com'
 
 class Overview(Widget.Widget):
-
+    '''
+    The main widget for sending commmands to the Iridium modem
+    '''
 
     def __init__(self,master,x,y,m_W,m_H,w=300,h=300):
+        '''
+        The initialization function
+        
+        Parameters:
+        self         (Widget): Required for object functions
+        master (WidgetSocket): The widget socket
+        x               (int): The x-coordinate of the top-left corner
+        y               (int): The y-coordinate of the top-left corner
+        m_W             (int): The width of the main application window
+        m_H             (int): The height of the main application window
+        w               (int): The width of the widget
+        h               (int): The height of the widget
+        
+        Returns:
+        None
+        '''
+    
+        # Use parent class constructor for basic things and add ability to create rounded rectangle
         Widget.Widget.__init__(self,master,x,y,m_W,m_H,w,h,bg='black')
         
         self.COMMANDS = [
@@ -206,6 +226,10 @@ class Overview(Widget.Widget):
         
         
     def enable_send(self,event):
+        '''
+        Toggle the enable on the 'Send Command' button
+        '''
+    
         if self.components[self.ci_send_btn][0]['state'] == 'disabled':
             self.components[self.ci_send_btn][0]['state'] = 'normal'
         else:
@@ -213,6 +237,10 @@ class Overview(Widget.Widget):
         
         
     def redraw(self,w,h):
+        '''
+        Update all graphical components
+        '''
+    
         self.canvas.delete('all')
         
         # Draw all the pretty UI decorations
@@ -295,11 +323,19 @@ class Overview(Widget.Widget):
         
                           
     def set_cmd(self,cmd_num):
+        '''
+        Set the index of the command that will be sent
+        '''
+    
         self.active_cmd = cmd_num
         self.redraw(self.master.width,self.master.height)
         
         
     def set_profile(self):
+        '''
+        Set the command profile from the command profile JSON
+        '''
+    
         self.profile = self.master.profile
         for i,lbl in enumerate(self.labels[8:-2]):
             lbl.configure(text=list(self.profile['commands'].keys())[i])
@@ -310,6 +346,10 @@ class Overview(Widget.Widget):
         
         
     def send_command(self):
+        '''
+        Sends command after confirmation; disables 'Send Command' button; begins looking for confirmation
+        '''
+    
         if self.master.profile is not None:
             alias = list(self.master.profile['commands'].keys())[self.active_cmd]
             cmd = bin(self.active_cmd)[2:].zfill(3)
@@ -337,6 +377,10 @@ class Overview(Widget.Widget):
             
             
     def check_for_confirm(self):
+        '''
+        Search emails for most recent confirmation email; re-enable 'Send Command' button
+        '''
+    
         start = datetime.datetime.now()
         srvc = Emailer.gmail_authenticate()
         
@@ -381,6 +425,10 @@ class Overview(Widget.Widget):
     
     
     def send_iridium_cmd(self,cmd,imei):
+        '''
+        Construct and send email containing chosen command pin state
+        '''
+    
         if cmd not in self.COMMANDS:
             raise ValueError('Command must be one of the ones defined')
             
