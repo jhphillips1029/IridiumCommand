@@ -19,6 +19,8 @@ Additionally, several more functions have been added, and the program made modul
 
 To begin, you will need to install [Anaconda](https://docs.anaconda.com/anaconda/install/index.html). This is because the conda package manager pulls in some required C files that pip does not.
 
+<b>* Note:</b> During installation of Anaconda, a prompt will ask the user to add Anaconda to the path variable. It is imperative that 'Yes' is chosen. If not added to the path variable, ICC will not be able to find the modules necessary to run.
+
 <b>* Note:</b> Windows users will need to use the Anaconda Prompt as the terminal window.
 
 Download this repo using the 'CODE' button above, [this link](https://codeload.github.com/jhphillips1029/IridiumCommand/zip/refs/heads/master), or by creating a new directory and running the command `git clone https://github.com/jhphillips1029/IridiumCommand`. If you downloaded a .zip file, unzip it to an appropriate location.
