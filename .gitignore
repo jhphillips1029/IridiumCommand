@@ -1,0 +1,10 @@
+.ipynb_checkpoints
+credentials.json
+token.pickle
+Iridium Command Testing.ipynb
+issues.txt
+logo.png
+profiles/*.json
+logs/*.log
+widgets/__pycache__
+widgets/.ipynb_checkpoints
