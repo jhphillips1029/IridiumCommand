@@ -325,7 +325,7 @@ def resize(event):
             set_frame(active_frame)
             
             image = img_copy.resize((int(logo_w/WIDTH*width),int(logo_h/HEIGHT*height)))
-            tk_image = ImageTk.PhotoImage(image)
+            tk_image = ImageTk.PhotoImage(img_copy)
             logo_label.configure(image=tk_image)
             logo_label.image=tk_image
             logo_label.place(x=(WIDTH-logo_w-30)/WIDTH*width,y=50/HEIGHT*height)
@@ -533,6 +533,7 @@ class Splash(tk.Toplevel):
     
         image = Image.open('images/logo.png')
         img_copy= image.copy()
+        image = img_copy.resize((int(image.width*125/image.height),125))
         tk_image = ImageTk.PhotoImage(image)
         logo_label = tk.Label(self,image=tk_image,bg='black')
         logo_label.image = tk_image
@@ -717,7 +718,8 @@ if __name__=='__main__':
     
     # Logo
     image = Image.open('images/logo.png')
-    img_copy= image.copy()
+    img_copy = image.copy()
+    image = img_copy.resize((int(image.width*125/image.height),125))
     tk_image = ImageTk.PhotoImage(image)
     logo_label = tk.Label(root,image=tk_image,bg='black')
     logo_label.image = tk_image
