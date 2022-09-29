@@ -26,7 +26,7 @@ try:
     import tkinter as tk
 except ImportError:
     import Tkinter as tk
-import widgets.Widget as Widget
+import widgets.Utility.Widget as Widget
 import socket
 import threading
 import io
@@ -75,27 +75,27 @@ class Network(Widget.Widget):
         
         self.add_comp(tk.Label(self,
                                text='New Connection',
-                               font=('Arial',10)
+                               font=('Verdana',9)
                               ),
                       0,0,150,20)
         
         self.ip_entry_comp_index = len(self.components)
         self.add_comp(tk.Entry(self,
                                textvariable=tk.StringVar(self,value='Type an ip address'),
-                               font=('Arial',10)
+                               font=('Verdana',10)
                               ),
                       0,25,150,20)
         
         self.add_comp(tk.Button(self,
                                 text='Connect',
-                                font=('Arial',10),
+                                font=('Verdana',9),
                                 command=self.connect
                                ),
                       25,50,100,20)
                       
         self.add_comp(tk.Button(self,
                                 text='Claim MASTER',
-                                font=('Arial',10),
+                                font=('Verdana',9),
                                 command=self.claim_master,
                                ),
                       180,25,150,20)

@@ -184,14 +184,14 @@ def draw_layout(w,h):
     # Labels
     for i,label in enumerate(labels.keys()):
         label_color = colors[label_colors[i]]
-        label.configure(font=('Arial',int(labels[label][2]/HEIGHT*h),'bold'),
+        label.configure(font=('Verdana',int(labels[label][2]/HEIGHT*h),'bold'),
                         fg=label_color)
         label.place(x=labels[label][0]/WIDTH*w,y=labels[label][1]/HEIGHT*h)
     
     # Buttons
     for i,btn in enumerate(buttons):
         btn_color = colors[btn_colors[i%len(btn_colors)]]
-        btn.configure(font=('Arial',int(10/HEIGHT*h),'bold'),
+        btn.configure(font=('Verdana',int(9/HEIGHT*h),'bold'),
                       bg=btn_color,
                       activebackground=btn_color)
         btn.place(x=btn_coords[btn][0]/WIDTH*w,
@@ -445,8 +445,9 @@ class WidgetSocket(tk.Frame):
         self.profile = profile
         for frame in self.frames:
             try:
-                #frame._set_profile(profile)
+                frame._set_profile(profile)
                 threading.Thread(target=frame._set_profile,args=(profile,)).start()
+                #frame._set_profile(profile)
             except:
                 self.log('Profile not set for {}'.format(str(frame).split('.!')[-1].capitalize()),'ERROR')
             
@@ -530,7 +531,7 @@ class Splash(tk.Toplevel):
         self.geometry('{}x{}'.format(200,150))
         self.dots = 3
     
-        image = Image.open('logo.png')
+        image = Image.open('images/logo.png')
         img_copy= image.copy()
         tk_image = ImageTk.PhotoImage(image)
         logo_label = tk.Label(self,image=tk_image,bg='black')
@@ -540,7 +541,7 @@ class Splash(tk.Toplevel):
         
         self.label = tk.Label(self,
                               text='Loading...',
-                              font=('Arial',18),
+                              font=('Verdana',18),
                               fg=colors['pale yellow'],
                               bg='black'
                              )
@@ -609,13 +610,14 @@ if __name__=='__main__':
     socket_frame = WidgetSocket(root,*socket_frame_coords)
     socket_frame.log('Started widget socket frame...',lvl='DEBUG')
 
-    # Importing and setting up widgets using an implicit import method (I know, "implicit = bad" and all, but it works well so fuck off)
-    modules = glob.glob('widgets/*.py')
+    # Importing and setting up widgets using an implicit import method (I know, "implicit = bad" and all, but it works well)
+    modules = [f for f in glob.glob('widgets/*/') if f.split('/')[-2] not in ['__pycache__','Utility']]
     modules = [mod.replace('\\','/') for mod in modules]   # for the shit operating system known as Windows.
+    modules = [f+f.split('/')[-2] for f in modules]
     try:
         # Determine if there are widgets to ignore
         with open('widgets/.ignore','r') as f:
-            ignores = ['widgets/'+line.strip() for line in f.readlines() if line[0]!='#' and line.strip()!='']
+            ignores = ['widgets/'+line.strip()+'/'+line.strip() for line in f.readlines() if line[0]!='#' and line.strip()!='']
             _modules = modules.copy()
             modules = [modules[i] for i in range(len(modules)) if modules[i]!='widgets/Widget.py' and modules[i] not in ignores]
             for mod in _modules:
@@ -630,7 +632,7 @@ if __name__=='__main__':
     # Import all modules found above
     for module in modules:
         try:
-            _import = __import__(module.replace('/','.').replace('.py',''),fromlist=['*'])
+            _import = __import__(module.replace('/','.'),fromlist=['*'])
             globals()[module.split('/')[-1].replace('.py','')] = _import
             locals()[module.split('/')[-1].replace('.py','')] = _import
             socket_frame.log('Successfully loaded {}.'.format(module),lvl='DEBUG')
@@ -671,7 +673,7 @@ if __name__=='__main__':
     ci = []
     primary_widgets = ['Overview','Tracker','Profiles']
     for k in primary_widgets:
-        ci.append(modules.index('widgets/{}.py'.format(k.replace(' ','_'))))
+        ci.append(modules.index('widgets/{0}/{0}'.format(k.replace(' ','_'))))
     mi = [ui[i] for i in range(len(ui)) if ui[i] not in ci]
     ci = ci+mi
     
@@ -686,7 +688,7 @@ if __name__=='__main__':
         btn = tk.Button(root,
                         text=modules[ci[i]].split('/')[-1].replace('.py','').replace('_',' '),
                         command=partial(set_frame,i),
-                        font=('Arial',int(10/HEIGHT*height),'bold'),
+                        font=('Verdana',int(9/HEIGHT*height),'bold'),
                         anchor='se',
                         highlightthickness=0,
                         bd=0,
@@ -714,7 +716,7 @@ if __name__=='__main__':
     update_log_window()
     
     # Logo
-    image = Image.open('logo.png')
+    image = Image.open('images/logo.png')
     img_copy= image.copy()
     tk_image = ImageTk.PhotoImage(image)
     logo_label = tk.Label(root,image=tk_image,bg='black')

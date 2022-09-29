@@ -1,13 +1,8 @@
 # Iridium Command Center
 
-## Table of Contents
-* [About](#about)
-* [Installing](#installing)
-* [Running](#running)
-* [Modifying](#modifying)
-* [Generating Google Credentials](#generating-google-credentials)
+![](/images/FrontPage.png?raw=true)
 
-### About
+## About
 
 The Iridium Command Center (ICC) was designed to optimize the process of sending commands to BOREALIS weather balloon payloads after our long-time flight director retired.
 
@@ -15,7 +10,14 @@ Previously, the commands were hand-crafted and emailed by the flight director du
 
 Additionally, several more functions have been added, and the program made modular, so it can be used by any of the several university ballooning groups around the US.
 
-### Installing
+## Table of Contents
+* [About](#about)
+* [Installing](#installing)
+* [Running](#running)
+* [Modifying](#modifying)
+* [Generating Google Credentials](#generating-google-credentials)
+
+## Installing
 
 To begin, you will need to install [Anaconda](https://docs.anaconda.com/anaconda/install/index.html). This is because the conda package manager pulls in some required C files that pip does not.
 
@@ -30,7 +32,7 @@ Open a terminal window and navigate to the directory containing the code. Run th
 Finally, you will need to generate credentials for the email portion of the controls. To do so, please follow the directions in <i>[Generating Google Credentials](#generating-google-credentials)</i> (modified from [these](https://developers.google.com/workspace/guides/create-credentials#desktop) instructions).
 
 
-### Running
+## Running
 
 Open a terminal window and navigate to directory containing the code.
 
@@ -39,11 +41,11 @@ In most other real operating systems, run the command `python main.py`.
 
 This will bring up the ICC. It comes pre-installed with three main functions, each accessible under its own tab on the left-hand side of the GUI. These three functions are the base functions necessary for sending Iridium commands.
 
-### Modifying
+## Modifying
 
 ICC is designed to be modular. As a result, you can create your own widgets to add to the GUI. An example widget named 'Demo' can be found in the widgets folder. To load this into the GUI, comment it out in widgets/.ignore.
 
-### Generating Google Credentials
+## Generating Google Credentials
 
 1. Open the [Google Cloud Console](https://console.cloud.google.com/).
 2. Next to <b>Google Cloud Platform</b>, click the Down arrow and create a new project.

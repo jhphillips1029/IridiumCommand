@@ -28,10 +28,10 @@ try:
 except ImportError:
     import Tkinter as tk
     from Tkinter import messagebox
-import widgets.Widget as Widget
-from widgets.Widget import _create_rounded_rectangle
+import widgets.Utility.Widget as Widget
+from widgets.Utility.Widget import _create_rounded_rectangle
 from functools import partial
-import widgets.Emailer as Emailer
+import widgets.Utility.Emailer as Emailer
 import datetime
 import base64
 import threading
@@ -87,7 +87,7 @@ class Overview(Widget.Widget):
         for i in range(8):
             self.btns.append(tk.Button(self,
                                     text=str(bin(i)[2:].zfill(3)),
-                                    font=('Arial',10,'bold'),
+                                    font=('Verdana',9,'bold'),
                                     command=partial(self.set_cmd,i),
                                     anchor='se',
                                     highlightthickness=0,
@@ -105,7 +105,7 @@ class Overview(Widget.Widget):
         self.ci_send_btn = len(self.components)
         self.send_cmd_btn = tk.Button(self,
                                       text='Send Command',
-                                      font=('Arial',10,'bold'),
+                                      font=('Verdana',9,'bold'),
                                       command=self.send_command,
                                       anchor='se',
                                       highlightthickness=0,
@@ -119,7 +119,7 @@ class Overview(Widget.Widget):
         for i in range(8):
             label = tk.Label(self,
                              text=bin(i)[2:].zfill(3),
-                             font=('Arial',10),
+                             font=('Verdana',9),
                              fg=self.master.colors['pale yellow'],
                              bg='black')
             self.labels.append(label)
@@ -127,7 +127,7 @@ class Overview(Widget.Widget):
         for i in range(8):
             label = tk.Label(self,
                              text='Not set',
-                             font=('Arial',10),
+                             font=('Verdana',9),
                              anchor='w',
                              fg=self.master.colors['pale yellow'],
                              bg='black')
@@ -136,7 +136,7 @@ class Overview(Widget.Widget):
             
         label = tk.Label(self,
                          text='Profile: Select under \'Profiles\'',
-                         font=('Arial',10),
+                         font=('Verdana',9),
                          anchor='w',
                          fg=self.master.colors['pale yellow'],
                          bg='black'
@@ -146,7 +146,7 @@ class Overview(Widget.Widget):
             
         label = tk.Label(self,
                          text='IMEI: Not set',
-                         font=('Arial',10),
+                         font=('Verdana',9),
                          anchor='w',
                          fg=self.master.colors['pale yellow'],
                          bg='black'
@@ -161,7 +161,7 @@ class Overview(Widget.Widget):
         for i,alert_color in enumerate(self.master.alert_colors[::-1]+['Cancel']):
             self.add_comp(tk.Button(self,
                                     text=alert_color.capitalize()+' Alert',
-                                    font=('Arial',10,'bold'),
+                                    font=('Verdana',9,'bold'),
                                     command=partial(self.master.set_alert,
                                                     len(self.master.alert_colors)-i-1),
                                     anchor='se',
@@ -177,7 +177,7 @@ class Overview(Widget.Widget):
         self.X_conf_block,self.Y_conf_block = 300,65
         self.add_comp(tk.Label(self,
                                text='Confirmation Data:',
-                               font=('Arial',10),
+                               font=('Verdana',9),
                                anchor='w',
                                fg=self.master.colors['pale yellow'],
                                bg='black'
@@ -186,7 +186,7 @@ class Overview(Widget.Widget):
         for i,l in enumerate(['Date','Cmd','MTMSN','Queue']):
             self.add_comp(tk.Label(self,
                                    text='{}:{}'.format(l,' '*(5-len(l))),
-                                   font=('Arial',10),
+                                   font=('Verdana',9),
                                    anchor='w',
                                    fg=self.master.colors['pale yellow'],
                                    bg='black'
@@ -195,7 +195,7 @@ class Overview(Widget.Widget):
         for i,l in enumerate(['Date','Cmd','MTMSN','Queue']):
             self.add_comp(tk.Label(self,
                                    text='N/A'.format(l,' '*(5-len(l))),
-                                   font=('Arial',10),
+                                   font=('Verdana',9),
                                    anchor='w',
                                    fg=self.master.colors['pale yellow'],
                                    bg='black'
@@ -203,7 +203,7 @@ class Overview(Widget.Widget):
                           self.X_conf_block+65,self.Y_conf_block+(i+1)*25,150,20)
         self.add_comp(tk.Label(self,
                                text='Previous Command:',
-                               font=('Arial',10),
+                               font=('Verdana',9),
                                anchor='w',
                                fg=self.master.colors['pale yellow'],
                                bg='black'
@@ -211,7 +211,7 @@ class Overview(Widget.Widget):
                       self.X_conf_block,self.Y_conf_block+150,150,20)
         self.add_comp(tk.Label(self,
                                text='N/A',
-                               font=('Arial',10),
+                               font=('Verdana',9),
                                anchor='w',
                                fg=self.master.colors['pale yellow'],
                                bg='black'
@@ -374,6 +374,7 @@ class Overview(Widget.Widget):
             
         thread = threading.Thread(target=self.check_for_confirm)
         thread.start()
+        #self.check_for_confirm
             
             
     def check_for_confirm(self):

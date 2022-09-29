@@ -1,16 +1,10 @@
 # To have the main application ignore a module, place the name of the file here
 
-# Utility modules
-Emailer.py
-Balloon_Coordinates.py
-Map.py
-Cadastral.py
-
 # Widgets to ignore
-Demo.py
-HASP.py
-Network.py
-Gnd_Stn.py
-#Filling.py
-Adv_Profiles.py
-LoRa.py
+Demo
+HASP
+Network
+Gnd_Stn
+#Filling
+Adv_Profiles
+LoRa

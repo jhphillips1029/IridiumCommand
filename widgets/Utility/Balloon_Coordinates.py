@@ -36,7 +36,7 @@ class Balloon_Coordinates:
         self.latest_flight = req.json()[-1];
 
         # Define UID
-        flightTime = int(time.mktime(time.strptime(self.latest_flight, "%Y-%m-%d")) - 21600 - Balloon_Coordinates.BOREALIS_EPOCH);
+        flightTime = int(time.mktime(time.strptime(self.latest_flight, "%Y-%m-%d")) - 25200 - Balloon_Coordinates.BOREALIS_EPOCH);   # Changed 21600 to 25200 (JP)
         self.uid = (int(flightTime) << 24)|int(self.imei[8:]);
         return;
 

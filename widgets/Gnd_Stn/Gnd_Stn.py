@@ -27,7 +27,7 @@ try:
     import tkinter as tk
 except ImportError:
     import Tkinter as tk
-import widgets.Widget as Widget
+import widgets.Utility.Widget as Widget
     
 class Gnd_Stn(Widget.Widget):
     '''
@@ -45,7 +45,7 @@ class Gnd_Stn(Widget.Widget):
         self.X_B1,self.Y_B1 = 0,0
         self.add_comp(tk.Button(self,
                                 text='Potato',
-                                font=('Arial',10)
+                                font=('Verdana',10)
                                ),
                       self.X_B1,self.Y_B1,100,100)
         

@@ -27,19 +27,21 @@ try:
 except ImportError:
     import Tkinter as tk
 import io
-import widgets.Widget as Widget
-from widgets.Widget import _create_rounded_rectangle
-import widgets.Balloon_Coordinates as BC
+import widgets.Utility.Widget as Widget
+from widgets.Utility.Widget import _create_rounded_rectangle
+import widgets.Utility.Balloon_Coordinates as BC
 import pandas as pd
 import requests
 import urllib
 from threading import Thread
-import widgets.Map as Map
+import widgets.Utility.Map as Map
 import numpy as np
 from functools import partial
+import matplotlib
 import matplotlib.pyplot as plt
 from PIL import Image,ImageTk
 import traceback
+matplotlib.use('Agg')
 
 
 class Tracker(Widget.Widget):
@@ -76,6 +78,7 @@ class Tracker(Widget.Widget):
         self.g = 9.80665
         self.M = 0.02896968
         self.R_0 = 8.314462618
+        self.numProcs = 0
         
         self.canvas = tk.Canvas(self,borderwidth=0,highlightthickness=0,bg='black')
         self.add_comp(self.canvas,0,0,w,h)
@@ -96,26 +99,26 @@ class Tracker(Widget.Widget):
         
         self.cx,self.cy = [0],[0]
         
-        title = tk.Label(self,text='Coordinates:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
-        self.add_comp(title,0.5*self.w+130,20,155,25)
+        title = tk.Label(self,text='Coordinates:',font=('Verdana',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
+        self.add_comp(title,0.5*self.w+130,25,180,25)
         self.titles.append(title)
         
-        label = tk.Label(self,text='Lat: {:9.4f}\nLon: {:9.4f}'.format(*self.Map.center_pt),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
-        self.add_comp(label,0.5*self.w+135,40,100,30)
+        label = tk.Label(self,text='Lat: {:9.4f}\nLon: {:9.4f}'.format(*self.Map.center_pt),font=('Verdana',9),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,55,100,30)
         self.labels.append(label)
         self.latlon_label = label
         
-        title = tk.Label(self,text='Altitude:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
+        title = tk.Label(self,text='Altitude:',font=('Verdana',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='w')
         self.add_comp(title,0.5*self.w+130,85,155,25)
         self.titles.append(title)
         
-        label = tk.Label(self,text='Alt: {:7.2f} m'.format(self.Map.DEFAULT_elev),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
-        self.add_comp(label,0.5*self.w+135,105,100,15)
+        label = tk.Label(self,text='Alt: {:7.2f} m'.format(self.Map.DEFAULT_elev),font=('Verdana',9),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,115,100,15)
         self.labels.append(label)
         self.alt_label = label
         
-        label = tk.Label(self,text='Alt: {:7.1f} ft'.format(self.Map.DEFAULT_elev*3.28084),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
-        self.add_comp(label,0.5*self.w+135,120,100,15)
+        label = tk.Label(self,text='Alt: {:7.1f} ft'.format(self.Map.DEFAULT_elev*3.28084),font=('Verdana',9),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,130,100,15)
         self.labels.append(label)
         self.altft_label = label
         
@@ -126,29 +129,29 @@ class Tracker(Widget.Widget):
             agl = float(result.json()['USGS_Elevation_Point_Query_Service']['Elevation_Query']['Elevation']) - self.Map.DEFAULT_elev
         except:
             agl = 0
-        label = tk.Label(self,text='AGL: {:7.2f} m'.format(agl),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
-        self.add_comp(label,0.5*self.w+135,135,100,15)
+        label = tk.Label(self,text='AGL: {:7.2f} m'.format(agl),font=('Verdana',9),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,145,100,15)
         self.labels.append(label)
         self.agl_label = label
         
-        title = tk.Label(self,text='Velocities:',font=('Arial',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
-        self.add_comp(title,0.5*self.w+130,165,155,25)
+        title = tk.Label(self,text='Velocities:',font=('Verdana',18,'bold'),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(title,0.5*self.w+130,165,180,25)
         self.titles.append(title)
         
-        label = tk.Label(self,text='Vert: {:7.2f} m/s'.format(0),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
-        self.add_comp(label,0.5*self.w+135,190,125,15)
+        label = tk.Label(self,text='Vert: {:7.2f} m/s'.format(0),font=('Verdana',9),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,195,125,15)
         self.labels.append(label)
         self.vertvel_label = label
         
-        label = tk.Label(self,text='Grnd: {:7.2f} m/s'.format(0),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
-        self.add_comp(label,0.5*self.w+135,205,125,15)
+        label = tk.Label(self,text='Grnd: {:7.2f} m/s'.format(0),font=('Verdana',9),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+135,210,125,15)
         self.labels.append(label)
         self.grndvel_label = label
         
         p_theory = self.p_0*np.exp(-((self.g*self.Map.DEFAULT_elev*self.M)/(self.T_0*self.R_0)))
         pcntg = 100*(1-p_theory/self.p_0)
-        label = tk.Label(self,text='You are above {:6.2f}% of\nthe atmosphere.'.format(pcntg),font=('Arial',10),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
-        self.add_comp(label,0.5*self.w+130,235,155,30)
+        label = tk.Label(self,text='You are above {:6.2f}% of\nthe atmosphere.'.format(pcntg),font=('Verdana',9),fg=self.master.colors['pale yellow'],bg='black',anchor='nw')
+        self.add_comp(label,0.5*self.w+130,235,200,30)
         self.labels.append(label)
         self.pcntg_label = label
         
@@ -165,7 +168,7 @@ class Tracker(Widget.Widget):
         for x,y,s,c in zip(x_coords,y_coords,symbols,cmds):
             button = tk.Button(self,
                                text=s,
-                               font=('Arial',18),
+                               font=('Verdana',18),
                                command=c,
                                highlightthickness=0,
                                bd=0,
@@ -279,8 +282,9 @@ class Tracker(Widget.Widget):
         '''
     
         # Threading to prevent freezing in main thread
-        t1 = Thread(target=self._move_map,args=(ind,))
+        t1 = Thread(target=self._move_map, args=(ind,))
         t1.start()
+        #self._move_map(ind)
     
     
     def _move_map(self,ind):
@@ -326,6 +330,7 @@ class Tracker(Widget.Widget):
                 data = pd.read_csv(io.StringIO(urlData.decode('UTF-8')))
             except:
                 data = self.data
+                
             if data.shape==self.data.shape:
                 pass   # self.master.log('No new data',lvl='DEBUG')
             else:
@@ -376,6 +381,7 @@ class Tracker(Widget.Widget):
                 self.master.log('Payload @ ({:9.4f},{:9.4f})|{:7.2f} m'.format(list(self.data['latitude'])[-1],list(self.data['longitude'])[-1],list(self.data['altitude'])[-1]))
         
         #self.after(5000,self.update_coords)
+        self.numProcs -= 1
         return;   # kill thread on finish
         
 
@@ -383,18 +389,19 @@ class Tracker(Widget.Widget):
         '''
         Wrapper function for _update_coords
         '''
-    
+        
         # Threading to prevent freezing in main thread
-        t1 = Thread(target=self._update_coords,args=(clear,))
+        t1 = Thread(target=self._update_coords, args=(clear,))
         t1.start()
-        self.after(3000,self.update_coords)
+        #self._update_coords(clear)
+        self.after(3000, self.update_coords)
         
         
     def set_profile(self):
         '''
         Set flight command profile
         '''
-    
+        
         try:
             self.bc = BC.Balloon_Coordinates(self.master.profile['imei'])
         except:

@@ -31,8 +31,8 @@ except ImportError:
     import Tkinter as tk
     from Tkinter import messagebox
     from Tkinter import simpledialog
-import widgets.Widget as Widget
-from widgets.Widget import _create_rounded_rectangle
+import widgets.Utility.Widget as Widget
+from widgets.Utility.Widget import _create_rounded_rectangle
 import numpy as np
 import serial
 import json
@@ -172,12 +172,12 @@ class Filling(Widget.Widget):
                 value='{}'.format(self.entry_units[i][0])))
             self.add_comp(tk.Label(self,
                                    text=self.entry_names[i],
-                                   font=('Arial',10),
+                                   font=('Verdana',9),
                                    bg='black',
                                    fg=self.master.colors['pale yellow']),
                           X,Y+(h+5)*i,115,h)
             self.add_comp(tk.Entry(self,
-                                   font=('Arial',10),
+                                   font=('Verdana',9),
                                    textvariable=self.entry_string_vars[-1],
                                    bg='black',
                                    fg=self.master.colors['pale yellow']),
@@ -185,7 +185,7 @@ class Filling(Widget.Widget):
             om = tk.OptionMenu(self,
                                self.units_string_vars[-1],
                                *self.entry_units[i])
-            om.configure(font=('Arial',10),
+            om.configure(font=('Verdana',9),
                          bg='black',
                          fg=self.master.colors['pale yellow'],
                          activebackground='black',
@@ -199,7 +199,7 @@ class Filling(Widget.Widget):
             
         self.add_comp(tk.Button(self,
                                 text='Calculate',
-                                font=('Arial',10,'bold'),
+                                font=('Verdana',9,'bold'),
                                 command=self.calculate_fill,
                                 bg=self.master.colors['red'],
                                 activebackground=self.master.colors['red'],
@@ -227,7 +227,7 @@ class Filling(Widget.Widget):
         for i,line in enumerate(output_str.split('\n')):
             self.add_comp(tk.Label(self,
                                    text=line,
-                                   font=('Arial',10),
+                                   font=('Verdana',9),
                                    anchor='nw',
                                    bg='black',
                                    fg=self.master.colors['pale yellow']
@@ -236,7 +236,7 @@ class Filling(Widget.Widget):
                           
         self.add_comp(tk.Button(self,
                                 text='Profile Fill',
-                                font=('Arial',10),
+                                font=('Verdana',9),
                                 command=self.profile_fill,
                                 bg=self.master.colors['orange'],
                                 activebackground=self.master.colors['orange'],
@@ -249,7 +249,7 @@ class Filling(Widget.Widget):
                           
         self.add_comp(tk.Button(self,
                                 text='Serial Fill',
-                                font=('Arial',10),
+                                font=('Verdana',9),
                                 command=self.serial_fill,
                                 bg=self.master.colors['orange'],
                                 activebackground=self.master.colors['orange'],

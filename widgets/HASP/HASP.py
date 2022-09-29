@@ -26,8 +26,8 @@ try:
     import tkinter as tk
 except ImportError:
     import Tkinter as tk
-import widgets.Widget as Widget
-from widgets.Widget import _create_rounded_rectangle
+import widgets.Utility.Widget as Widget
+from widgets.Utility.Widget import _create_rounded_rectangle
 import requests
 import re
 import io

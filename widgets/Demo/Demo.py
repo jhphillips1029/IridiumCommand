@@ -27,7 +27,7 @@ try:
     import tkinter as tk   # for python3
 except ImportError:
     import Tkinter as tk   # for python2
-import widgets.Widget as Widget   # required
+import widgets.Utility.Widget as Widget   # required
     
 class Demo(Widget.Widget):   # extends Widget class
     def __init__(self,master,x,y,m_W,m_H,w=300,h=300):
@@ -36,13 +36,13 @@ class Demo(Widget.Widget):   # extends Widget class
         
         # Use the self.add_comp() function to add components to the widget's registry of components so that it can be resized with the window
         self.add_comp(tk.Button(self,command=self.demo_button),100,100,100,100)
-        self.add_comp(tk.Label(self,text='Hello, World!',font=('Arial',10)),0,0,100,30)
+        self.add_comp(tk.Label(self,text='Hello, World!',font=('Verdana',9)),0,0,100,30)
         
         
     def redraw(self,w,h):
         # There are components with text, so we must deal with their resizing
         # self.redraw() is called (if it exists) whenever the app is resized
-        self.components[0][0].configure(font=('Arial',int(10/self.m_H*h)))
+        self.components[0][0].configure(font=('Verdana',int(9/self.m_H*h)))
         
         
     def demo_button(self):

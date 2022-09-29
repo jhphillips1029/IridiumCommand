@@ -28,8 +28,8 @@ try:
 except ImportError:
     import Tkinter as tk
     from Tkinter import filedialog
-import widgets.Widget as Widget
-from widgets.Widget import _create_rounded_rectangle
+import widgets.Utility.Widget as Widget
+from widgets.Utility.Widget import _create_rounded_rectangle
 import json
 import glob
 import numpy as np
@@ -69,7 +69,7 @@ class Adv_Profiles(Widget.Widget):
         
         self.add_comp(tk.Button(self,
                                 text='Open Profile',
-                                font=('Arial',10,'bold'),
+                                font=('Verdana',9,'bold'),
                                 command=self.load_profile,
                                 anchor='se',
                                 highlightthickness=0,
@@ -82,7 +82,7 @@ class Adv_Profiles(Widget.Widget):
         
         self.add_comp(tk.Button(self,
                                 text='Save',
-                                font=('Arial',10,'bold'),
+                                font=('Verdana',9,'bold'),
                                 command=self.save_profile,
                                 anchor='se',
                                 highlightthickness=0,
@@ -95,7 +95,7 @@ class Adv_Profiles(Widget.Widget):
         
         self.disp_label = tk.Label(self,
                                    text='Lorem Ipsum... Blah, blah, blah.',
-                                   font=('Arial',10),
+                                   font=('Verdana',9),
                                    anchor='nw',
                                    bg='black',
                                    fg=self.master.colors['pale yellow']
@@ -103,7 +103,7 @@ class Adv_Profiles(Widget.Widget):
         self.add_comp(self.disp_label,50,35,310,350)
         
         self.edit_entry = tk.Text(self,
-                                  font=('Arial',10),
+                                  font=('Verdana',9),
                                   bg='black',
                                   fg=self.master.colors['pale yellow'],
                                   insertbackground=self.master.colors['pale yellow']

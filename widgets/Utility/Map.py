@@ -33,7 +33,7 @@ import cartopy.io.img_tiles as cimgt
 import io
 from urllib.request import urlopen, Request
 from PIL import Image,ImageTk
-import widgets.Widget as Widget
+import widgets.Utility.Widget as Widget
 
 
 class Map(Widget.Widget):
