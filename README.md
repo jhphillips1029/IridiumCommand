@@ -1,6 +1,6 @@
 # Iridium Command Center
 
-![](/images/FrontPage.png?raw=true)
+![](/images/Welcome.png?raw=true)
 
 ## About
 
